@@ -17,12 +17,16 @@ interface AppContextType {
   setShowTopupModal: (show: boolean) => void;
   showReceipt: Transaction | null;
   setShowReceipt: (tx: Transaction | null) => void;
+  showCloseShift: boolean;
+  setShowCloseShift: (show: boolean) => void;
   handleLogin: (phone: string, pin: string) => void;
   handleRegister: (data: { name: string; phone: string; pin: string }) => void;
   handleOpenStore: (cashStart: number, bankStart: number) => void;
   handleTopup: (data: { type: string; amount: number; source: string }) => void;
   handleTransaction: (type: string, amount: number, fee: number, data: { customerName: string; target: string }) => void;
+  handleCloseShift: () => void;
   handleLogout: () => void;
+  updateAdminSettings: (settings: AdminSettings) => void;
   searchQuery: string;
   setSearchQuery: (q: string) => void;
 }
@@ -46,7 +50,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [balance, setBalance] = useState<Balance>({ cash: 0, bank: 0 });
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [adminSettings] = useState<AdminSettings>({
+  const [adminSettings, setAdminSettings] = useState<AdminSettings>({
     tarik: { fee: 5000, step: 1000000 },
     setor: { fee: 5000, step: 1000000 },
     transfer: { fee: 6500, step: 1000000 },
@@ -54,6 +58,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [showTransactionModal, setShowTransactionModal] = useState<string | null>(null);
   const [showTopupModal, setShowTopupModal] = useState(false);
   const [showReceipt, setShowReceipt] = useState<Transaction | null>(null);
+  const [showCloseShift, setShowCloseShift] = useState(false);
 
   const addNotification = useCallback((msg: string) => {
     const id = Date.now();
@@ -112,6 +117,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     };
     setDailyStatus(newStatus);
     setBalance({ cash: cashStart, bank: bankStart });
+    setTransactions([]);
     setCurrentPage('dashboard');
   }, [user]);
 
@@ -159,18 +165,38 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setShowReceipt(newTx);
   }, [addNotification]);
 
+  const handleCloseShift = useCallback(() => {
+    if (dailyStatus) {
+      setDailyStatus({
+        ...dailyStatus,
+        status: 'CLOSED',
+        timeClosed: new Date().toISOString(),
+      });
+    }
+    setShowCloseShift(false);
+    addNotification('Shift berhasil ditutup!');
+    setCurrentPage('open-store');
+  }, [dailyStatus, addNotification]);
+
   const handleLogout = useCallback(() => {
     setUser(null);
     setCurrentPage('login');
   }, []);
+
+  const updateAdminSettings = useCallback((settings: AdminSettings) => {
+    setAdminSettings(settings);
+    addNotification('Pengaturan biaya admin berhasil disimpan!');
+    setCurrentPage('account');
+  }, [addNotification]);
 
   return (
     <AppContext.Provider value={{
       user, currentPage, setCurrentPage, registeredUsers, dailyStatus, transactions, balance,
       notifications, adminSettings, showTransactionModal, setShowTransactionModal,
       showTopupModal, setShowTopupModal, showReceipt, setShowReceipt,
+      showCloseShift, setShowCloseShift,
       handleLogin, handleRegister, handleOpenStore, handleTopup, handleTransaction,
-      handleLogout, searchQuery, setSearchQuery,
+      handleCloseShift, handleLogout, updateAdminSettings, searchQuery, setSearchQuery,
     }}>
       {children}
     </AppContext.Provider>
