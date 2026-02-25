@@ -13,6 +13,7 @@ export interface DailyStatus {
   cashStart: number;
   bankStart: number;
   timeOpen: string;
+  timeClosed?: string;
   status: 'OPEN' | 'CLOSED';
 }
 
@@ -38,10 +39,26 @@ export interface AdminSettings {
   transfer: { fee: number; step: number };
 }
 
+export interface ShiftSummary {
+  totalTransactions: number;
+  totalAdminFee: number;
+  totalVolume: number;
+  cashStart: number;
+  cashEnd: number;
+  cashDifference: number;
+  bankStart: number;
+  bankEnd: number;
+  bankDifference: number;
+  tarikCount: number;
+  setorCount: number;
+  transferCount: number;
+  topupCount: number;
+}
+
 export interface Notification {
   id: number;
   message: string;
 }
 
-export type PageId = 'login' | 'open-store' | 'dashboard' | 'cashbook' | 'report' | 'account';
+export type PageId = 'login' | 'open-store' | 'dashboard' | 'cashbook' | 'report' | 'account' | 'admin-settings';
 export type TransactionType = 'TARIK' | 'SETOR' | 'TRANSFER';

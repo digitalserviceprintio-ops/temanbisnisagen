@@ -19,7 +19,10 @@ const TransactionModal = () => {
     transfer: { title: 'Transfer Bank', icon: <TrendingUp className="w-5 h-5" />, colorClass: 'bg-transfer-soft text-transfer' },
   }[type];
 
-  const autoFee = adminSettings[type]?.fee || 5000;
+  const setting = adminSettings[type];
+  const parsedAmount = parseFloat(amount) || 0;
+  const multiplier = setting?.step > 0 ? Math.ceil(parsedAmount / setting.step) : 1;
+  const autoFee = multiplier * (setting?.fee || 5000);
   const currentFee = manualFee !== null ? manualFee : autoFee;
 
   const onSubmit = () => {
