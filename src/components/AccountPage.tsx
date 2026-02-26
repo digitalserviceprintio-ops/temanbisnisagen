@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogOut, User, Settings, ChevronRight, Clock } from 'lucide-react';
+import { LogOut, User, Settings, ChevronRight, Clock, HelpCircle, MessageCircle, Code } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 
 const AccountPage = () => {
@@ -20,6 +20,20 @@ const AccountPage = () => {
       colorClass: 'bg-tarik-soft text-tarik',
       action: () => setShowCloseShift(true),
       disabled: !dailyStatus || dailyStatus.status === 'CLOSED',
+    },
+    {
+      label: 'Pertanyaan Tentang Aplikasi',
+      desc: 'FAQ dan panduan penggunaan',
+      icon: <HelpCircle className="w-5 h-5" />,
+      colorClass: 'bg-setor-soft text-setor',
+      action: () => setCurrentPage('faq'),
+    },
+    {
+      label: 'Hubungi Helpdesk',
+      desc: 'Chat via WhatsApp',
+      icon: <MessageCircle className="w-5 h-5" />,
+      colorClass: 'bg-topup-soft text-topup',
+      action: () => window.open('https://wa.me/6282186371356', '_blank'),
     },
   ];
 
@@ -68,6 +82,14 @@ const AccountPage = () => {
           <LogOut className="w-5 h-5" />
           Keluar Aplikasi
         </button>
+
+        {/* Developer Info */}
+        <div className="flex items-center justify-center gap-2 pt-4 pb-2">
+          <Code className="w-3.5 h-3.5 text-muted-foreground" />
+          <p className="text-[10px] text-muted-foreground font-medium tracking-wider">
+            Developed by <span className="font-black">AD-2026</span> · V.1.0
+          </p>
+        </div>
       </div>
     </div>
   );
