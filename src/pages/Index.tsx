@@ -7,6 +7,7 @@ import CashbookPage from '@/components/CashbookPage';
 import ReportPage from '@/components/ReportPage';
 import AccountPage from '@/components/AccountPage';
 import AdminSettingsPage from '@/components/AdminSettingsPage';
+import FaqPage from '@/components/FaqPage';
 import BottomNav from '@/components/BottomNav';
 import TransactionModal from '@/components/TransactionModal';
 import TopupModal from '@/components/TopupModal';
@@ -27,8 +28,9 @@ const AppContent = () => {
       {currentPage === 'report' && <ReportPage />}
       {currentPage === 'account' && <AccountPage />}
       {currentPage === 'admin-settings' && <AdminSettingsPage />}
+      {currentPage === 'faq' && <FaqPage />}
 
-      {currentPage !== 'open-store' && currentPage !== 'admin-settings' && <BottomNav />}
+      {currentPage !== 'open-store' && currentPage !== 'admin-settings' && currentPage !== 'faq' && <BottomNav />}
 
       <TransactionModal />
       <TopupModal />

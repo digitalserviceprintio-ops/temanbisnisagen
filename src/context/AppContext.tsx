@@ -1,5 +1,10 @@
-import React, { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
 import type { AppUser, DailyStatus, Transaction, Balance, AdminSettings, Notification, PageId } from '@/types/app';
+import {
+  fetchTransactions, insertTransaction,
+  fetchAdminSettings, upsertAdminSettings,
+  fetchDailyStatus, insertDailyStatus, closeDailyStatus,
+} from '@/lib/supabase-data';
 
 interface AppContextType {
   user: AppUser | null;
@@ -68,6 +73,43 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }, 3000);
   }, []);
 
+  // Load cloud data when user logs in
+  useEffect(() => {
+    if (!user) return;
+    const loadData = async () => {
+      // Load admin settings
+      const settings = await fetchAdminSettings(user.id);
+      if (settings) setAdminSettings(settings);
+
+      // Load today's shift
+      const today = new Date().toISOString().split('T')[0];
+      const status = await fetchDailyStatus(user.id, today);
+      if (status) {
+        setDailyStatus(status);
+        // Load transactions for this shift
+        const txs = await fetchTransactions(user.id, today);
+        setTransactions(txs);
+        // Recalculate balance
+        let cash = status.cashStart;
+        let bank = status.bankStart;
+        for (const tx of txs) {
+          if (tx.type === 'TOPUP') {
+            if (tx.target === 'KAS LACI') cash += tx.amount;
+            else bank += tx.amount;
+          } else if (tx.type === 'TARIK') {
+            cash -= tx.amount;
+            bank += tx.amount + tx.fee;
+          } else {
+            cash += tx.amount + tx.fee;
+            bank -= tx.amount;
+          }
+        }
+        setBalance({ cash, bank });
+      }
+    };
+    loadData();
+  }, [user]);
+
   const handleLogin = useCallback((phone: string, pin: string) => {
     const foundUser = registeredUsers.find(u => u.phone === phone && u.pin === pin);
     if (foundUser) {
@@ -119,6 +161,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setBalance({ cash: cashStart, bank: bankStart });
     setTransactions([]);
     setCurrentPage('dashboard');
+    // Persist to cloud
+    insertDailyStatus(newStatus);
   }, [user]);
 
   const handleTopup = useCallback((data: { type: string; amount: number; source: string }) => {
@@ -141,7 +185,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setTransactions(prev => [entry, ...prev]);
     addNotification(`Top Up ${type} Berhasil!`);
     setShowTopupModal(false);
-  }, [addNotification]);
+    // Persist
+    const shiftDate = dailyStatus?.date || new Date().toISOString().split('T')[0];
+    insertTransaction(entry, user?.id || '', shiftDate);
+  }, [addNotification, dailyStatus, user]);
 
   const handleTransaction = useCallback((type: string, amount: number, fee: number, data: { customerName: string; target: string }) => {
     const newTx: Transaction = {
@@ -163,7 +210,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     addNotification(`Transaksi ${type} Berhasil!`);
     setShowTransactionModal(null);
     setShowReceipt(newTx);
-  }, [addNotification]);
+    // Persist
+    const shiftDate = dailyStatus?.date || new Date().toISOString().split('T')[0];
+    insertTransaction(newTx, user?.id || '', shiftDate);
+  }, [addNotification, dailyStatus, user]);
 
   const handleCloseShift = useCallback(() => {
     if (dailyStatus) {
@@ -172,6 +222,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         status: 'CLOSED',
         timeClosed: new Date().toISOString(),
       });
+      closeDailyStatus(dailyStatus.id);
     }
     setShowCloseShift(false);
     addNotification('Shift berhasil ditutup!');
@@ -187,7 +238,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setAdminSettings(settings);
     addNotification('Pengaturan biaya admin berhasil disimpan!');
     setCurrentPage('account');
-  }, [addNotification]);
+    // Persist
+    if (user) upsertAdminSettings(user.id, settings);
+  }, [addNotification, user]);
 
   return (
     <AppContext.Provider value={{

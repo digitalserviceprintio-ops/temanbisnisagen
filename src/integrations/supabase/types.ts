@@ -14,7 +14,120 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      admin_settings: {
+        Row: {
+          id: string
+          setor_fee: number
+          setor_step: number
+          tarik_fee: number
+          tarik_step: number
+          transfer_fee: number
+          transfer_step: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          setor_fee?: number
+          setor_step?: number
+          tarik_fee?: number
+          tarik_step?: number
+          transfer_fee?: number
+          transfer_step?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          setor_fee?: number
+          setor_step?: number
+          tarik_fee?: number
+          tarik_step?: number
+          transfer_fee?: number
+          transfer_step?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      daily_status: {
+        Row: {
+          bank_start: number
+          cash_start: number
+          created_at: string
+          date: string
+          id: string
+          status: string
+          time_closed: string | null
+          time_open: string
+          user_id: string
+        }
+        Insert: {
+          bank_start?: number
+          cash_start?: number
+          created_at?: string
+          date: string
+          id: string
+          status?: string
+          time_closed?: string | null
+          time_open?: string
+          user_id: string
+        }
+        Update: {
+          bank_start?: number
+          cash_start?: number
+          created_at?: string
+          date?: string
+          id?: string
+          status?: string
+          time_closed?: string | null
+          time_open?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          customer_name: string
+          fee: number
+          id: string
+          shift_date: string
+          status: string
+          target: string
+          timestamp: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          customer_name?: string
+          fee?: number
+          id: string
+          shift_date: string
+          status?: string
+          target?: string
+          timestamp?: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          customer_name?: string
+          fee?: number
+          id?: string
+          shift_date?: string
+          status?: string
+          target?: string
+          timestamp?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
