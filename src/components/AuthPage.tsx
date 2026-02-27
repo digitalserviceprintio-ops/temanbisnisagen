@@ -1,19 +1,43 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Smartphone, UserPlus, KeyRound } from 'lucide-react';
-import { useApp } from '@/context/AppContext';
+import { ShieldCheck, Smartphone, UserPlus, KeyRound, Mail, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
-const AuthPage = () => {
-  const { handleLogin, handleRegister } = useApp();
+const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
-  const [formData, setFormData] = useState({ phone: '', pin: '', name: '' });
+  const [formData, setFormData] = useState({ email: '', password: '', name: '', phone: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const onSubmit = () => {
-    if (authMode === 'login') {
-      handleLogin(formData.phone, formData.pin);
-    } else {
-      handleRegister(formData);
-      setAuthMode('login');
-      setFormData({ phone: '', pin: '', name: '' });
+  const onSubmit = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      if (authMode === 'login') {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
+        });
+        if (error) throw error;
+      } else {
+        if (formData.password.length < 6) {
+          setError('Password minimal 6 karakter!');
+          setLoading(false);
+          return;
+        }
+        const { error } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: {
+            data: { name: formData.name, phone: formData.phone },
+          },
+        });
+        if (error) throw error;
+        // Auto-confirm is enabled, so user is logged in immediately
+      }
+    } catch (err: any) {
+      setError(err.message || 'Terjadi kesalahan');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -31,58 +55,80 @@ const AuthPage = () => {
           </p>
         </div>
 
+        {/* Error */}
+        {error && (
+          <div className="bg-destructive/10 text-destructive text-xs font-bold p-3 rounded-2xl mb-4 text-center">
+            {error}
+          </div>
+        )}
+
         {/* Form */}
         <div className="space-y-4">
           {authMode === 'register' && (
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Nama Lengkap</label>
-              <div className="relative">
-                <UserPlus className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Nama lengkap"
-                  value={formData.name}
-                  onChange={e => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full pl-12 pr-4 py-4 bg-card rounded-2xl border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm font-medium"
-                />
+            <>
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Nama Lengkap</label>
+                <div className="relative">
+                  <UserPlus className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Nama lengkap"
+                    value={formData.name}
+                    onChange={e => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full pl-12 pr-4 py-4 bg-card rounded-2xl border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm font-medium"
+                  />
+                </div>
               </div>
-            </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Nomor HP</label>
+                <div className="relative">
+                  <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <input
+                    type="tel"
+                    placeholder="08xxxxxxxxxx"
+                    value={formData.phone}
+                    onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full pl-12 pr-4 py-4 bg-card rounded-2xl border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm font-medium"
+                  />
+                </div>
+              </div>
+            </>
           )}
 
           <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Nomor HP</label>
+            <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Email</label>
             <div className="relative">
-              <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
-                type="tel"
-                placeholder="08xxxxxxxxxx"
-                value={formData.phone}
-                onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                type="email"
+                placeholder="email@contoh.com"
+                value={formData.email}
+                onChange={e => setFormData({ ...formData, email: e.target.value })}
                 className="w-full pl-12 pr-4 py-4 bg-card rounded-2xl border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm font-medium"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">PIN (6 Digit)</label>
+            <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Password</label>
             <div className="relative">
               <KeyRound className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 type="password"
-                maxLength={6}
-                placeholder="••••••"
-                value={formData.pin}
-                onChange={e => setFormData({ ...formData, pin: e.target.value })}
-                className="w-full pl-12 pr-4 py-4 bg-card rounded-2xl border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm font-medium tracking-[0.5em]"
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={e => setFormData({ ...formData, password: e.target.value })}
+                className="w-full pl-12 pr-4 py-4 bg-card rounded-2xl border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm font-medium"
               />
             </div>
           </div>
 
           <button
             onClick={onSubmit}
-            className="w-full gradient-primary text-primary-foreground font-black py-4 rounded-2xl shadow-elevated active:scale-[0.98] transition-transform text-sm uppercase tracking-widest mt-2"
+            disabled={loading}
+            className="w-full gradient-primary text-primary-foreground font-black py-4 rounded-2xl shadow-elevated active:scale-[0.98] transition-transform text-sm uppercase tracking-widest mt-2 disabled:opacity-60"
           >
-            {authMode === 'login' ? 'Masuk Sekarang' : 'Daftar Sekarang'}
+            {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : authMode === 'login' ? 'Masuk Sekarang' : 'Daftar Sekarang'}
           </button>
         </div>
 
@@ -92,7 +138,7 @@ const AuthPage = () => {
             {authMode === 'login' ? 'Belum punya akun?' : 'Sudah punya akun?'}
           </p>
           <button
-            onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}
+            onClick={() => { setAuthMode(authMode === 'login' ? 'register' : 'login'); setError(''); }}
             className="text-primary font-bold text-xs uppercase tracking-widest mt-2 hover:underline"
           >
             {authMode === 'login' ? 'Daftar Akun Baru' : 'Kembali Ke Login'}

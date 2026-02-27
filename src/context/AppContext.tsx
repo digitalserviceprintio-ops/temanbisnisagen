@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
 import type { AppUser, DailyStatus, Transaction, Balance, AdminSettings, Notification, PageId } from '@/types/app';
+import { supabase } from '@/integrations/supabase/client';
 import {
   fetchTransactions, insertTransaction,
   fetchAdminSettings, upsertAdminSettings,
@@ -10,7 +11,6 @@ interface AppContextType {
   user: AppUser | null;
   currentPage: PageId;
   setCurrentPage: (page: PageId) => void;
-  registeredUsers: AppUser[];
   dailyStatus: DailyStatus | null;
   transactions: Transaction[];
   balance: Balance;
@@ -24,8 +24,6 @@ interface AppContextType {
   setShowReceipt: (tx: Transaction | null) => void;
   showCloseShift: boolean;
   setShowCloseShift: (show: boolean) => void;
-  handleLogin: (phone: string, pin: string) => void;
-  handleRegister: (data: { name: string; phone: string; pin: string }) => void;
   handleOpenStore: (cashStart: number, bankStart: number) => void;
   handleTopup: (data: { type: string; amount: number; source: string }) => void;
   handleTransaction: (type: string, amount: number, fee: number, data: { customerName: string; target: string }) => void;
@@ -47,10 +45,7 @@ export const useApp = () => {
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AppUser | null>(null);
-  const [currentPage, setCurrentPage] = useState<PageId>('login');
-  const [registeredUsers, setRegisteredUsers] = useState<AppUser[]>([
-    { id: 'USR-8821', name: 'Agen Budi', phone: '08123456789', role: 'Agen', pin: '123456' },
-  ]);
+  const [currentPage, setCurrentPage] = useState<PageId>('dashboard');
   const [dailyStatus, setDailyStatus] = useState<DailyStatus | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [balance, setBalance] = useState<Balance>({ cash: 0, bank: 0 });
@@ -65,32 +60,56 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [showTopupModal, setShowTopupModal] = useState(false);
   const [showReceipt, setShowReceipt] = useState<Transaction | null>(null);
   const [showCloseShift, setShowCloseShift] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
 
   const addNotification = useCallback((msg: string) => {
     const id = Date.now();
     setNotifications(prev => [{ id, message: msg }, ...prev]);
-    setTimeout(() => {
-      setNotifications(prev => prev.filter(n => n.id !== id));
-    }, 3000);
+    setTimeout(() => setNotifications(prev => prev.filter(n => n.id !== id)), 3000);
+  }, []);
+
+  // Listen to auth state
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        // Fetch profile
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        setUser({
+          id: session.user.id,
+          name: profile?.name || session.user.user_metadata?.name || 'Agen',
+          phone: profile?.phone || session.user.user_metadata?.phone || '',
+          role: profile?.role || 'Agen',
+          pin: '',
+        });
+      } else {
+        setUser(null);
+      }
+      setAuthReady(true);
+    });
+
+    supabase.auth.getSession();
+
+    return () => subscription.unsubscribe();
   }, []);
 
   // Load cloud data when user logs in
   useEffect(() => {
     if (!user) return;
     const loadData = async () => {
-      // Load admin settings
       const settings = await fetchAdminSettings(user.id);
       if (settings) setAdminSettings(settings);
 
-      // Load today's shift
       const today = new Date().toISOString().split('T')[0];
       const status = await fetchDailyStatus(user.id, today);
       if (status) {
         setDailyStatus(status);
-        // Load transactions for this shift
         const txs = await fetchTransactions(user.id, today);
         setTransactions(txs);
-        // Recalculate balance
         let cash = status.cashStart;
         let bank = status.bankStart;
         for (const tx of txs) {
@@ -106,46 +125,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           }
         }
         setBalance({ cash, bank });
+        setCurrentPage('dashboard');
+      } else {
+        setCurrentPage('open-store');
       }
     };
     loadData();
   }, [user]);
-
-  const handleLogin = useCallback((phone: string, pin: string) => {
-    const foundUser = registeredUsers.find(u => u.phone === phone && u.pin === pin);
-    if (foundUser) {
-      setUser(foundUser);
-      addNotification(`Selamat datang, ${foundUser.name}`);
-      const today = new Date().toISOString().split('T')[0];
-      if (!dailyStatus || dailyStatus.date !== today) {
-        setCurrentPage('open-store');
-      } else {
-        setCurrentPage('dashboard');
-      }
-    } else {
-      addNotification('Nomor HP atau PIN salah!');
-    }
-  }, [registeredUsers, dailyStatus, addNotification]);
-
-  const handleRegister = useCallback((data: { name: string; phone: string; pin: string }) => {
-    if (registeredUsers.some(u => u.phone === data.phone)) {
-      addNotification('Nomor HP sudah terdaftar!');
-      return;
-    }
-    if (data.pin.length !== 6) {
-      addNotification('PIN harus 6 digit!');
-      return;
-    }
-    const newUser: AppUser = {
-      id: `USR-${Math.floor(1000 + Math.random() * 9000)}`,
-      name: data.name,
-      phone: data.phone,
-      role: 'Agen',
-      pin: data.pin,
-    };
-    setRegisteredUsers(prev => [...prev, newUser]);
-    addNotification('Pendaftaran Berhasil! Silakan Login.');
-  }, [registeredUsers, addNotification]);
 
   const handleOpenStore = useCallback((cashStart: number, bankStart: number) => {
     const today = new Date().toISOString().split('T')[0];
@@ -162,7 +148,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setBalance({ cash: cashStart, bank: bankStart });
     setTransactions([]);
     setCurrentPage('dashboard');
-    // Persist to cloud
     insertDailyStatus(newStatus);
   }, [user]);
 
@@ -186,7 +171,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setTransactions(prev => [entry, ...prev]);
     addNotification(`Top Up ${type} Berhasil!`);
     setShowTopupModal(false);
-    // Persist
     const shiftDate = dailyStatus?.date || new Date().toISOString().split('T')[0];
     insertTransaction(entry, user?.id || '', shiftDate);
   }, [addNotification, dailyStatus, user]);
@@ -211,18 +195,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     addNotification(`Transaksi ${type} Berhasil!`);
     setShowTransactionModal(null);
     setShowReceipt(newTx);
-    // Persist
     const shiftDate = dailyStatus?.date || new Date().toISOString().split('T')[0];
     insertTransaction(newTx, user?.id || '', shiftDate);
   }, [addNotification, dailyStatus, user]);
 
   const handleCloseShift = useCallback(() => {
     if (dailyStatus) {
-      setDailyStatus({
-        ...dailyStatus,
-        status: 'CLOSED',
-        timeClosed: new Date().toISOString(),
-      });
+      setDailyStatus({ ...dailyStatus, status: 'CLOSED', timeClosed: new Date().toISOString() });
       closeDailyStatus(dailyStatus.id);
     }
     setShowCloseShift(false);
@@ -230,9 +209,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setCurrentPage('open-store');
   }, [dailyStatus, addNotification]);
 
-  const handleLogout = useCallback(() => {
+  const handleLogout = useCallback(async () => {
+    await supabase.auth.signOut();
     setUser(null);
-    setCurrentPage('login');
+    setDailyStatus(null);
+    setTransactions([]);
+    setBalance({ cash: 0, bank: 0 });
   }, []);
 
   const updateAdminSettings = useCallback((settings: AdminSettings) => {
@@ -253,13 +235,21 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setCurrentPage('open-store');
   }, [user, addNotification]);
 
+  if (!authReady) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
   return (
     <AppContext.Provider value={{
-      user, currentPage, setCurrentPage, registeredUsers, dailyStatus, transactions, balance,
+      user, currentPage, setCurrentPage, dailyStatus, transactions, balance,
       notifications, adminSettings, showTransactionModal, setShowTransactionModal,
       showTopupModal, setShowTopupModal, showReceipt, setShowReceipt,
       showCloseShift, setShowCloseShift,
-      handleLogin, handleRegister, handleOpenStore, handleTopup, handleTransaction,
+      handleOpenStore, handleTopup, handleTransaction,
       handleCloseShift, handleLogout, updateAdminSettings, handleResetData, searchQuery, setSearchQuery,
     }}>
       {children}
