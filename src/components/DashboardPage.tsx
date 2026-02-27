@@ -2,6 +2,7 @@ import React from 'react';
 import { ArrowUpRight, ArrowDownLeft, TrendingUp, PlusCircle, ChevronRight } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { formatCurrency, formatTime } from '@/lib/format';
+import PromoCarousel from './PromoCarousel';
 
 const DashboardPage = () => {
   const { user, balance, transactions, setCurrentPage, setShowTransactionModal, setShowTopupModal } = useApp();
@@ -57,6 +58,9 @@ const DashboardPage = () => {
           ))}
         </div>
       </div>
+
+      {/* Promo Carousel */}
+      <PromoCarousel />
 
       {/* Recent Transactions */}
       <div className="px-6 mt-6">

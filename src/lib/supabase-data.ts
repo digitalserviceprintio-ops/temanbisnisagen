@@ -110,3 +110,13 @@ export const closeDailyStatus = async (id: string) => {
   }).eq('id', id);
   if (error) console.error('closeDailyStatus error:', error);
 };
+
+// --- Reset Data ---
+export const resetUserData = async (userId: string) => {
+  const { error: e1 } = await supabase.from('transactions').delete().eq('user_id', userId);
+  if (e1) console.error('resetTransactions error:', e1);
+  const { error: e2 } = await supabase.from('daily_status').delete().eq('user_id', userId);
+  if (e2) console.error('resetDailyStatus error:', e2);
+  const { error: e3 } = await supabase.from('admin_settings').delete().eq('user_id', userId);
+  if (e3) console.error('resetAdminSettings error:', e3);
+};
