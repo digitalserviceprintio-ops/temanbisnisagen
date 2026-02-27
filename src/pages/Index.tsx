@@ -41,6 +41,7 @@ const AppContent = () => {
   );
 };
 
+// Force full page component remount
 const Index = () => (
   <AppProvider>
     <AppContent />
