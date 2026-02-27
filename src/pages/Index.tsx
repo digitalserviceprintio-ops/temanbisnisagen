@@ -18,7 +18,7 @@ import NotificationToast from '@/components/NotificationToast';
 const AppContent = () => {
   const { user, currentPage } = useApp();
 
-  if (!user) return <AuthPage />;
+  if (!user) return <AuthPage onAuthSuccess={() => {}} />;
 
   return (
     <div className="min-h-screen bg-background max-w-lg mx-auto relative">
@@ -41,7 +41,6 @@ const AppContent = () => {
   );
 };
 
-// Force full page component remount
 const Index = () => (
   <AppProvider>
     <AppContent />

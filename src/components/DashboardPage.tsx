@@ -1,8 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowUpRight, ArrowDownLeft, TrendingUp, PlusCircle, ChevronRight } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { formatCurrency, formatTime } from '@/lib/format';
 import PromoCarousel from './PromoCarousel';
+
+const DigitalClock = () => {
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const dateStr = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+  return (
+    <div className="text-right">
+      <p className="text-primary-foreground text-lg font-black tabular-nums tracking-tight">{timeStr}</p>
+      <p className="text-primary-foreground/60 text-[10px] font-bold uppercase tracking-widest">{dateStr}</p>
+    </div>
+  );
+};
 
 const DashboardPage = () => {
   const { user, balance, transactions, setCurrentPage, setShowTransactionModal, setShowTopupModal } = useApp();
@@ -23,9 +42,7 @@ const DashboardPage = () => {
             <p className="text-primary-foreground/70 text-xs font-bold uppercase tracking-widest">Selamat Bekerja</p>
             <h2 className="text-primary-foreground text-xl font-black mt-1">{user?.name}</h2>
           </div>
-          <div className="w-10 h-10 bg-primary-foreground/20 rounded-full flex items-center justify-center">
-            <span className="text-primary-foreground font-black text-sm">{user?.name?.charAt(0)}</span>
-          </div>
+          <DigitalClock />
         </div>
 
         {/* Balance Cards */}
