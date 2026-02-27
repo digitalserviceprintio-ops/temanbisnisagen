@@ -1,9 +1,9 @@
 import React from 'react';
-import { LogOut, User, Settings, ChevronRight, Clock, HelpCircle, MessageCircle, Code } from 'lucide-react';
+import { LogOut, User, Settings, ChevronRight, Clock, HelpCircle, MessageCircle, Code, RotateCcw } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 
 const AccountPage = () => {
-  const { user, handleLogout, setCurrentPage, setShowCloseShift, dailyStatus } = useApp();
+  const { user, handleLogout, setCurrentPage, setShowCloseShift, dailyStatus, handleResetData } = useApp();
 
   const menuItems = [
     {
@@ -34,6 +34,17 @@ const AccountPage = () => {
       icon: <MessageCircle className="w-5 h-5" />,
       colorClass: 'bg-topup-soft text-topup',
       action: () => window.open('https://wa.me/6282186371356', '_blank'),
+    },
+    {
+      label: 'Reset Data',
+      desc: 'Hapus semua data transaksi & shift',
+      icon: <RotateCcw className="w-5 h-5" />,
+      colorClass: 'bg-destructive/10 text-destructive',
+      action: () => {
+        if (window.confirm('Yakin ingin menghapus semua data transaksi dan shift? Data yang sudah dihapus tidak bisa dikembalikan.')) {
+          handleResetData();
+        }
+      },
     },
   ];
 

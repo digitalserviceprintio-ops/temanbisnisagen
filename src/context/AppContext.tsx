@@ -3,7 +3,7 @@ import type { AppUser, DailyStatus, Transaction, Balance, AdminSettings, Notific
 import {
   fetchTransactions, insertTransaction,
   fetchAdminSettings, upsertAdminSettings,
-  fetchDailyStatus, insertDailyStatus, closeDailyStatus,
+  fetchDailyStatus, insertDailyStatus, closeDailyStatus, resetUserData,
 } from '@/lib/supabase-data';
 
 interface AppContextType {
@@ -32,6 +32,7 @@ interface AppContextType {
   handleCloseShift: () => void;
   handleLogout: () => void;
   updateAdminSettings: (settings: AdminSettings) => void;
+  handleResetData: () => void;
   searchQuery: string;
   setSearchQuery: (q: string) => void;
 }
@@ -238,9 +239,19 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setAdminSettings(settings);
     addNotification('Pengaturan biaya admin berhasil disimpan!');
     setCurrentPage('account');
-    // Persist
     if (user) upsertAdminSettings(user.id, settings);
   }, [addNotification, user]);
+
+  const handleResetData = useCallback(async () => {
+    if (!user) return;
+    await resetUserData(user.id);
+    setTransactions([]);
+    setDailyStatus(null);
+    setBalance({ cash: 0, bank: 0 });
+    setAdminSettings({ tarik: { fee: 5000, step: 1000000 }, setor: { fee: 5000, step: 1000000 }, transfer: { fee: 6500, step: 1000000 } });
+    addNotification('Semua data berhasil direset!');
+    setCurrentPage('open-store');
+  }, [user, addNotification]);
 
   return (
     <AppContext.Provider value={{
@@ -249,7 +260,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       showTopupModal, setShowTopupModal, showReceipt, setShowReceipt,
       showCloseShift, setShowCloseShift,
       handleLogin, handleRegister, handleOpenStore, handleTopup, handleTransaction,
-      handleCloseShift, handleLogout, updateAdminSettings, searchQuery, setSearchQuery,
+      handleCloseShift, handleLogout, updateAdminSettings, handleResetData, searchQuery, setSearchQuery,
     }}>
       {children}
     </AppContext.Provider>
