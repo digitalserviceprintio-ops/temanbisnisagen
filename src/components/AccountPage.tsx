@@ -1,11 +1,20 @@
-import React from 'react';
-import { LogOut, User, Settings, ChevronRight, Clock, HelpCircle, MessageCircle, Code, RotateCcw } from 'lucide-react';
+import React, { useState } from 'react';
+import { LogOut, User, Settings, ChevronRight, Clock, HelpCircle, MessageCircle, Code, RotateCcw, Store } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
+import StoreProfileModal from './StoreProfileModal';
 
 const AccountPage = () => {
   const { user, handleLogout, setCurrentPage, setShowCloseShift, dailyStatus, handleResetData } = useApp();
+  const [showStoreProfile, setShowStoreProfile] = useState(false);
 
   const menuItems = [
+    {
+      label: 'Profil Toko',
+      desc: 'Atur nama toko, alamat, dan info lainnya',
+      icon: <Store className="w-5 h-5" />,
+      colorClass: 'bg-primary/10 text-primary',
+      action: () => setShowStoreProfile(true),
+    },
     {
       label: 'Atur Biaya Admin',
       desc: 'Kelola biaya per kelipatan transaksi',
@@ -55,7 +64,6 @@ const AccountPage = () => {
       </div>
 
       <div className="px-6 -mt-5 space-y-4">
-        {/* Profile Card */}
         <div className="bg-card rounded-3xl p-6 shadow-elevated flex items-center gap-4">
           <div className="w-14 h-14 gradient-primary rounded-2xl flex items-center justify-center">
             <User className="w-7 h-7 text-primary-foreground" />
@@ -66,7 +74,6 @@ const AccountPage = () => {
           </div>
         </div>
 
-        {/* Menu Items */}
         {menuItems.map((item, i) => (
           <button
             key={i}
@@ -85,7 +92,6 @@ const AccountPage = () => {
           </button>
         ))}
 
-        {/* Logout */}
         <button
           onClick={handleLogout}
           className="w-full p-5 bg-card rounded-3xl flex items-center gap-3 text-destructive font-bold text-xs uppercase tracking-widest border border-border shadow-card active:scale-[0.98] transition-transform"
@@ -94,7 +100,6 @@ const AccountPage = () => {
           Keluar Aplikasi
         </button>
 
-        {/* Developer Info */}
         <div className="flex items-center justify-center gap-2 pt-4 pb-2">
           <Code className="w-3.5 h-3.5 text-muted-foreground" />
           <p className="text-[10px] text-muted-foreground font-medium tracking-wider">
@@ -102,6 +107,8 @@ const AccountPage = () => {
           </p>
         </div>
       </div>
+
+      <StoreProfileModal open={showStoreProfile} onClose={() => setShowStoreProfile(false)} />
     </div>
   );
 };

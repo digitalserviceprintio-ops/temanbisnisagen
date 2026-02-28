@@ -5,6 +5,7 @@ import {
   fetchTransactions, insertTransaction,
   fetchAdminSettings, upsertAdminSettings,
   fetchDailyStatus, insertDailyStatus, closeDailyStatus, resetUserData,
+  fetchStoreProfile, upsertStoreProfile, type StoreProfileData,
 } from '@/lib/supabase-data';
 
 interface AppContextType {
@@ -33,6 +34,8 @@ interface AppContextType {
   handleResetData: () => void;
   searchQuery: string;
   setSearchQuery: (q: string) => void;
+  storeProfile: StoreProfileData | null;
+  updateStoreProfile: (profile: StoreProfileData) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -51,6 +54,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [balance, setBalance] = useState<Balance>({ cash: 0, bank: 0 });
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [storeProfile, setStoreProfile] = useState<StoreProfileData | null>(null);
   const [adminSettings, setAdminSettings] = useState<AdminSettings>({
     tarik: { fee: 5000, step: 1000000 },
     setor: { fee: 5000, step: 1000000 },
@@ -72,7 +76,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
-        // Fetch profile
         const { data: profile } = await supabase
           .from('profiles')
           .select('*')
@@ -93,7 +96,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     });
 
     supabase.auth.getSession();
-
     return () => subscription.unsubscribe();
   }, []);
 
@@ -103,6 +105,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const loadData = async () => {
       const settings = await fetchAdminSettings(user.id);
       if (settings) setAdminSettings(settings);
+
+      const sp = await fetchStoreProfile(user.id);
+      if (sp) setStoreProfile(sp);
 
       const today = new Date().toISOString().split('T')[0];
       const status = await fetchDailyStatus(user.id, today);
@@ -215,6 +220,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setDailyStatus(null);
     setTransactions([]);
     setBalance({ cash: 0, bank: 0 });
+    setStoreProfile(null);
   }, []);
 
   const updateAdminSettings = useCallback((settings: AdminSettings) => {
@@ -235,6 +241,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setCurrentPage('open-store');
   }, [user, addNotification]);
 
+  const updateStoreProfile = useCallback(async (profile: StoreProfileData) => {
+    if (!user) return;
+    await upsertStoreProfile(user.id, profile);
+    setStoreProfile(profile);
+    addNotification('Profil toko berhasil disimpan!');
+  }, [user, addNotification]);
+
   if (!authReady) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -250,7 +263,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       showTopupModal, setShowTopupModal, showReceipt, setShowReceipt,
       showCloseShift, setShowCloseShift,
       handleOpenStore, handleTopup, handleTransaction,
-      handleCloseShift, handleLogout, updateAdminSettings, handleResetData, searchQuery, setSearchQuery,
+      handleCloseShift, handleLogout, updateAdminSettings, handleResetData,
+      searchQuery, setSearchQuery, storeProfile, updateStoreProfile,
     }}>
       {children}
     </AppContext.Provider>

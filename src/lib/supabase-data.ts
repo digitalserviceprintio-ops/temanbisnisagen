@@ -111,6 +111,42 @@ export const closeDailyStatus = async (id: string) => {
   if (error) console.error('closeDailyStatus error:', error);
 };
 
+// --- Store Profile ---
+export interface StoreProfileData {
+  store_name: string;
+  owner_name: string;
+  address: string;
+  phone: string;
+}
+
+export const fetchStoreProfile = async (userId: string): Promise<StoreProfileData | null> => {
+  const { data, error } = await supabase
+    .from('store_profiles')
+    .select('*')
+    .eq('user_id', userId)
+    .maybeSingle();
+  if (error) { console.error('fetchStoreProfile error:', error); return null; }
+  if (!data) return null;
+  return {
+    store_name: data.store_name,
+    owner_name: data.owner_name,
+    address: data.address,
+    phone: data.phone,
+  };
+};
+
+export const upsertStoreProfile = async (userId: string, profile: StoreProfileData) => {
+  const { error } = await supabase.from('store_profiles').upsert({
+    user_id: userId,
+    store_name: profile.store_name,
+    owner_name: profile.owner_name,
+    address: profile.address,
+    phone: profile.phone,
+    updated_at: new Date().toISOString(),
+  }, { onConflict: 'user_id' });
+  if (error) console.error('upsertStoreProfile error:', error);
+};
+
 // --- Reset Data ---
 export const resetUserData = async (userId: string) => {
   const { error: e1 } = await supabase.from('transactions').delete().eq('user_id', userId);

@@ -1,21 +1,41 @@
 import React, { useState } from 'react';
-import { X, PlusCircle } from 'lucide-react';
+import { X, PlusCircle, Loader2 } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
+import { supabase } from '@/integrations/supabase/client';
 
 const TopupModal = () => {
-  const { showTopupModal, setShowTopupModal, handleTopup, user } = useApp();
+  const { showTopupModal, setShowTopupModal, handleTopup } = useApp();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({ type: 'CASH', amount: '', source: '' });
-  const [pin, setPin] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   if (!showTopupModal) return null;
 
-  const onConfirm = () => {
-    if (pin === user?.pin) {
+  const onConfirm = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      // Get current user email
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.email) throw new Error('User tidak ditemukan');
+
+      // Verify password by re-signing in
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password,
+      });
+      if (authError) throw new Error('Password salah!');
+
       handleTopup({ type: formData.type, amount: parseFloat(formData.amount), source: formData.source });
       setStep(1);
       setFormData({ type: 'CASH', amount: '', source: '' });
-      setPin('');
+      setPassword('');
+    } catch (err: any) {
+      setError(err.message || 'Verifikasi gagal');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -23,7 +43,8 @@ const TopupModal = () => {
     setShowTopupModal(false);
     setStep(1);
     setFormData({ type: 'CASH', amount: '', source: '' });
-    setPin('');
+    setPassword('');
+    setError('');
   };
 
   return (
@@ -43,7 +64,6 @@ const TopupModal = () => {
 
         {step === 1 ? (
           <div className="space-y-4">
-            {/* Type Toggle */}
             <div className="flex bg-muted rounded-2xl p-1">
               {['CASH', 'BANK'].map(t => (
                 <button key={t} onClick={() => setFormData({ ...formData, type: t })}
@@ -70,7 +90,7 @@ const TopupModal = () => {
                 className="w-full px-4 py-4 bg-muted rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm" />
             </div>
 
-            <button onClick={() => setStep(2)} disabled={!formData.amount || parseFloat(formData.amount) <= 0 || !formData.source}
+            <button onClick={() => { setStep(2); setError(''); }} disabled={!formData.amount || parseFloat(formData.amount) <= 0 || !formData.source}
               className="w-full gradient-primary text-primary-foreground font-black py-4 rounded-2xl shadow-elevated disabled:opacity-40 active:scale-[0.98] transition-transform text-sm uppercase tracking-widest">
               Lanjutkan
             </button>
@@ -81,15 +101,23 @@ const TopupModal = () => {
               <p className="text-2xl font-black text-foreground">Rp {parseFloat(formData.amount).toLocaleString('id-ID')}</p>
               <p className="text-sm text-muted-foreground mt-1">{formData.source}</p>
             </div>
+
+            {error && (
+              <div className="bg-destructive/10 text-destructive text-xs font-bold p-3 rounded-2xl text-center">
+                {error}
+              </div>
+            )}
+
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Masukkan PIN</label>
-              <input type="password" maxLength={6} placeholder="••••••" value={pin} onChange={e => setPin(e.target.value)}
-                className="w-full px-4 py-4 bg-muted rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm tracking-[0.5em] text-center font-bold" />
+              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Masukkan Password Login</label>
+              <input type="password" placeholder="Password akun Anda" value={password} onChange={e => setPassword(e.target.value)}
+                className="w-full px-4 py-4 bg-muted rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm text-center font-bold" />
             </div>
             <div className="flex gap-3">
-              <button onClick={() => setStep(1)} className="flex-1 py-4 font-bold text-muted-foreground text-xs uppercase tracking-widest">Kembali</button>
-              <button onClick={onConfirm} className="flex-1 gradient-primary text-primary-foreground py-4 rounded-2xl font-black text-xs uppercase tracking-widest active:scale-[0.98] transition-transform">
-                Konfirmasi
+              <button onClick={() => { setStep(1); setError(''); }} className="flex-1 py-4 font-bold text-muted-foreground text-xs uppercase tracking-widest">Kembali</button>
+              <button onClick={onConfirm} disabled={loading || !password}
+                className="flex-1 gradient-primary text-primary-foreground py-4 rounded-2xl font-black text-xs uppercase tracking-widest active:scale-[0.98] transition-transform disabled:opacity-40">
+                {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Konfirmasi'}
               </button>
             </div>
           </div>
