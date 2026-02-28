@@ -110,6 +110,39 @@ export type Database = {
         }
         Relationships: []
       }
+      store_profiles: {
+        Row: {
+          address: string
+          created_at: string
+          id: string
+          owner_name: string
+          phone: string
+          store_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string
+          created_at?: string
+          id?: string
+          owner_name?: string
+          phone?: string
+          store_name?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          id?: string
+          owner_name?: string
+          phone?: string
+          store_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           amount: number

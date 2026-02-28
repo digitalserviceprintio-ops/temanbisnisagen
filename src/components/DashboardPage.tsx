@@ -24,7 +24,7 @@ const DigitalClock = () => {
 };
 
 const DashboardPage = () => {
-  const { user, balance, transactions, setCurrentPage, setShowTransactionModal, setShowTopupModal } = useApp();
+  const { user, balance, transactions, setCurrentPage, setShowTransactionModal, setShowTopupModal, storeProfile } = useApp();
 
   const actions = [
     { id: 'TARIK', label: 'Tarik', icon: <ArrowUpRight className="w-5 h-5" />, colorClass: 'bg-tarik-soft text-tarik' },
@@ -37,10 +37,24 @@ const DashboardPage = () => {
     <div className="pb-24">
       {/* Header */}
       <div className="gradient-hero px-6 pt-12 pb-8 rounded-b-[2rem]">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <p className="text-primary-foreground/70 text-xs font-bold uppercase tracking-widest">Selamat Bekerja</p>
-            <h2 className="text-primary-foreground text-xl font-black mt-1">{user?.name}</h2>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex-1 min-w-0">
+            {storeProfile?.store_name ? (
+              <>
+                <h2 className="text-primary-foreground text-lg font-black truncate">{storeProfile.store_name}</h2>
+                <p className="text-primary-foreground/60 text-[10px] font-bold uppercase tracking-widest truncate">
+                  {storeProfile.owner_name || user?.name} · {storeProfile.phone || user?.phone}
+                </p>
+                {storeProfile.address && (
+                  <p className="text-primary-foreground/50 text-[10px] truncate mt-0.5">{storeProfile.address}</p>
+                )}
+              </>
+            ) : (
+              <>
+                <p className="text-primary-foreground/70 text-xs font-bold uppercase tracking-widest">Selamat Bekerja</p>
+                <h2 className="text-primary-foreground text-xl font-black mt-1">{user?.name}</h2>
+              </>
+            )}
           </div>
           <DigitalClock />
         </div>
