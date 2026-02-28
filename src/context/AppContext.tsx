@@ -64,7 +64,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [showTopupModal, setShowTopupModal] = useState(false);
   const [showReceipt, setShowReceipt] = useState<Transaction | null>(null);
   const [showCloseShift, setShowCloseShift] = useState(false);
-  const [authReady, setAuthReady] = useState(false);
+  const [authReady, setAuthReady] = useState(true);
 
   const addNotification = useCallback((msg: string) => {
     const id = Date.now();
@@ -74,7 +74,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   // Listen to auth state
   useEffect(() => {
+    // Timeout fallback in case auth listener doesn't fire
+    const timeout = setTimeout(() => {
+      setAuthReady(true);
+    }, 5000);
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      clearTimeout(timeout);
       if (session?.user) {
         const { data: profile } = await supabase
           .from('profiles')
@@ -95,8 +101,22 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       setAuthReady(true);
     });
 
-    supabase.auth.getSession();
-    return () => subscription.unsubscribe();
+    // Explicitly get session to trigger INITIAL_SESSION event
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        clearTimeout(timeout);
+        setUser(null);
+        setAuthReady(true);
+      }
+    }).catch(() => {
+      clearTimeout(timeout);
+      setAuthReady(true);
+    });
+
+    return () => {
+      clearTimeout(timeout);
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Load cloud data when user logs in
@@ -248,13 +268,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     addNotification('Profil toko berhasil disimpan!');
   }, [user, addNotification]);
 
-  if (!authReady) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
-      </div>
-    );
-  }
 
   return (
     <AppContext.Provider value={{
