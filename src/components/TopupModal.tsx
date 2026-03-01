@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, PlusCircle, Loader2 } from 'lucide-react';
+import { X, PlusCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -8,6 +8,7 @@ const TopupModal = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({ type: 'CASH', amount: '', source: '' });
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -110,8 +111,11 @@ const TopupModal = () => {
 
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Masukkan Password Login</label>
-              <input type="password" placeholder="Password akun Anda" value={password} onChange={e => setPassword(e.target.value)}
-                className="w-full px-4 py-4 bg-muted rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm text-center font-bold" />
+              <input type={showPassword ? 'text' : 'password'} placeholder="Password akun Anda" value={password} onChange={e => setPassword(e.target.value)}
+                className="w-full px-4 pr-12 py-4 bg-muted rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm text-center font-bold" />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
             <div className="flex gap-3">
               <button onClick={() => { setStep(1); setError(''); }} className="flex-1 py-4 font-bold text-muted-foreground text-xs uppercase tracking-widest">Kembali</button>

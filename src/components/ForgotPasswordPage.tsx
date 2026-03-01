@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { ChevronLeft, Mail, Loader2, CheckCircle } from 'lucide-react';
+import { ChevronLeft, Mail, Loader2, CheckCircle, KeyRound, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 const ForgotPasswordPage = ({ onBack }: { onBack: () => void }) => {
+  const [step, setStep] = useState<'email' | 'sent'>('email');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async () => {
@@ -17,7 +17,7 @@ const ForgotPasswordPage = ({ onBack }: { onBack: () => void }) => {
         redirectTo: `${window.location.origin}/reset-password`,
       });
       if (error) throw error;
-      setSent(true);
+      setStep('sent');
     } catch (err: any) {
       setError(err.message || 'Terjadi kesalahan');
     } finally {
@@ -32,13 +32,15 @@ const ForgotPasswordPage = ({ onBack }: { onBack: () => void }) => {
           <ChevronLeft className="w-5 h-5 text-foreground" />
         </button>
 
-        {sent ? (
+        {step === 'sent' ? (
           <div className="text-center space-y-4">
             <div className="w-16 h-16 bg-setor-soft rounded-full flex items-center justify-center mx-auto">
               <CheckCircle className="w-8 h-8 text-setor" />
             </div>
             <h2 className="text-xl font-black text-foreground">Email Terkirim!</h2>
-            <p className="text-sm text-muted-foreground">Silakan cek inbox email <strong>{email}</strong> untuk link reset password.</p>
+            <p className="text-sm text-muted-foreground">
+              Cek inbox <strong>{email}</strong> untuk link reset password.
+            </p>
             <button onClick={onBack} className="w-full gradient-primary text-primary-foreground font-black py-4 rounded-2xl shadow-elevated text-sm uppercase tracking-widest mt-4">
               Kembali ke Login
             </button>
@@ -47,7 +49,7 @@ const ForgotPasswordPage = ({ onBack }: { onBack: () => void }) => {
           <>
             <div className="text-center mb-8">
               <h2 className="text-xl font-black text-foreground">Lupa Password</h2>
-              <p className="text-sm text-muted-foreground mt-2">Masukkan email terdaftar untuk menerima link reset password</p>
+              <p className="text-sm text-muted-foreground mt-2">Masukkan email terdaftar untuk reset password</p>
             </div>
 
             {error && (

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Smartphone, UserPlus, KeyRound, Mail, Loader2 } from 'lucide-react';
+import { ShieldCheck, Smartphone, UserPlus, KeyRound, Mail, Loader2, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import ForgotPasswordPage from './ForgotPasswordPage';
 
@@ -8,6 +8,7 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
   const [formData, setFormData] = useState({ email: '', password: '', name: '', phone: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async () => {
     setError('');
@@ -33,7 +34,6 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
           },
         });
         if (error) throw error;
-        // Auto-confirm is enabled, so user is logged in immediately
       }
     } catch (err: any) {
       setError(err.message || 'Terjadi kesalahan');
@@ -117,12 +117,15 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
             <div className="relative">
               <KeyRound className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
                 value={formData.password}
                 onChange={e => setFormData({ ...formData, password: e.target.value })}
-                className="w-full pl-12 pr-4 py-4 bg-card rounded-2xl border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm font-medium"
+                className="w-full pl-12 pr-12 py-4 bg-card rounded-2xl border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm font-medium"
               />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
           </div>
 
