@@ -65,6 +65,14 @@ const ReportPage = () => {
       </div>
 
       <div className="px-6 mt-6 space-y-4">
+        {/* Monthly Report Button */}
+        <button
+          onClick={() => setCurrentPage('monthly-report')}
+          className="w-full bg-card border border-border rounded-2xl py-4 flex items-center justify-center gap-2 text-sm font-black text-primary active:scale-95 transition-transform shadow-card"
+        >
+          <TrendingUp className="w-4 h-4" /> Laporan Bulanan & Grafik
+        </button>
+
         {/* Export Buttons */}
         <div className="flex gap-3 print:hidden">
           <button onClick={exportCSV} className="flex-1 bg-card border border-border rounded-2xl py-3 flex items-center justify-center gap-2 text-xs font-bold text-foreground active:scale-95 transition-transform shadow-card">
