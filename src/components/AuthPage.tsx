@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Smartphone, UserPlus, KeyRound, Mail, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import ForgotPasswordPage from './ForgotPasswordPage';
 
 const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
-  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgot'>('login');
   const [formData, setFormData] = useState({ email: '', password: '', name: '', phone: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -40,6 +41,8 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
       setLoading(false);
     }
   };
+
+  if (authMode === 'forgot') return <ForgotPasswordPage onBack={() => setAuthMode('login')} />;
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
@@ -132,14 +135,22 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
           </button>
         </div>
 
-        {/* Toggle */}
-        <div className="text-center mt-8">
+        {/* Toggle & Forgot */}
+        <div className="text-center mt-8 space-y-3">
+          {authMode === 'login' && (
+            <button
+              onClick={() => setAuthMode('forgot')}
+              className="text-muted-foreground text-xs hover:underline"
+            >
+              Lupa Password?
+            </button>
+          )}
           <p className="text-muted-foreground text-xs">
             {authMode === 'login' ? 'Belum punya akun?' : 'Sudah punya akun?'}
           </p>
           <button
             onClick={() => { setAuthMode(authMode === 'login' ? 'register' : 'login'); setError(''); }}
-            className="text-primary font-bold text-xs uppercase tracking-widest mt-2 hover:underline"
+            className="text-primary font-bold text-xs uppercase tracking-widest hover:underline"
           >
             {authMode === 'login' ? 'Daftar Akun Baru' : 'Kembali Ke Login'}
           </button>

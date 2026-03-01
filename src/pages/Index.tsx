@@ -8,6 +8,7 @@ import ReportPage from '@/components/ReportPage';
 import AccountPage from '@/components/AccountPage';
 import AdminSettingsPage from '@/components/AdminSettingsPage';
 import FaqPage from '@/components/FaqPage';
+import MonthlyReportPage from '@/components/MonthlyReportPage';
 import BottomNav from '@/components/BottomNav';
 import TransactionModal from '@/components/TransactionModal';
 import TopupModal from '@/components/TopupModal';
@@ -26,11 +27,12 @@ const AppContent = () => {
       {currentPage === 'dashboard' && <DashboardPage />}
       {currentPage === 'cashbook' && <CashbookPage />}
       {currentPage === 'report' && <ReportPage />}
+      {currentPage === 'monthly-report' && <MonthlyReportPage />}
       {currentPage === 'account' && <AccountPage />}
       {currentPage === 'admin-settings' && <AdminSettingsPage />}
       {currentPage === 'faq' && <FaqPage />}
 
-      {currentPage !== 'open-store' && currentPage !== 'admin-settings' && currentPage !== 'faq' && <BottomNav />}
+      {currentPage !== 'open-store' && currentPage !== 'admin-settings' && currentPage !== 'faq' && currentPage !== 'monthly-report' && <BottomNav />}
 
       <TransactionModal />
       <TopupModal />
