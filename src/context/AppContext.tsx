@@ -7,6 +7,7 @@ import {
   fetchDailyStatus, insertDailyStatus, closeDailyStatus, resetUserData,
   fetchStoreProfile, upsertStoreProfile, type StoreProfileData,
 } from '@/lib/supabase-data';
+import { checkLicense, checkIsAdmin, type LicenseInfo } from '@/lib/license-data';
 
 interface AppContextType {
   user: AppUser | null;
@@ -36,6 +37,10 @@ interface AppContextType {
   setSearchQuery: (q: string) => void;
   storeProfile: StoreProfileData | null;
   updateStoreProfile: (profile: StoreProfileData) => Promise<void>;
+  licenseInfo: LicenseInfo | null;
+  isAdmin: boolean;
+  refreshLicense: () => Promise<void>;
+  userEmail: string;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -55,6 +60,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [storeProfile, setStoreProfile] = useState<StoreProfileData | null>(null);
+  const [licenseInfo, setLicenseInfo] = useState<LicenseInfo | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
   const [adminSettings, setAdminSettings] = useState<AdminSettings>({
     tarik: { fee: 5000, step: 1000000 },
     setor: { fee: 5000, step: 1000000 },
@@ -82,6 +90,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       clearTimeout(timeout);
       if (session?.user) {
+        setUserEmail(session.user.email || '');
         const { data: profile } = await supabase
           .from('profiles')
           .select('*')
@@ -119,10 +128,26 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
+  const refreshLicense = useCallback(async () => {
+    if (!user) return;
+    const info = await checkLicense(user.id);
+    setLicenseInfo(info);
+    const admin = await checkIsAdmin(user.id);
+    setIsAdmin(admin);
+  }, [user]);
+
   // Load cloud data when user logs in
   useEffect(() => {
     if (!user) return;
     const loadData = async () => {
+      // Check license & admin
+      const [info, admin] = await Promise.all([
+        checkLicense(user.id),
+        checkIsAdmin(user.id),
+      ]);
+      setLicenseInfo(info);
+      setIsAdmin(admin);
+
       const settings = await fetchAdminSettings(user.id);
       if (settings) setAdminSettings(settings);
 
@@ -278,6 +303,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       handleOpenStore, handleTopup, handleTransaction,
       handleCloseShift, handleLogout, updateAdminSettings, handleResetData,
       searchQuery, setSearchQuery, storeProfile, updateStoreProfile,
+      licenseInfo, isAdmin, refreshLicense, userEmail,
     }}>
       {children}
     </AppContext.Provider>

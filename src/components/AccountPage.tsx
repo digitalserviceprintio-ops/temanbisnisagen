@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { LogOut, User, Settings, ChevronRight, Clock, HelpCircle, MessageCircle, Code, RotateCcw, Store } from 'lucide-react';
+import { LogOut, User, Settings, ChevronRight, Clock, HelpCircle, MessageCircle, Code, RotateCcw, Store, KeyRound, ShieldCheck } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import StoreProfileModal from './StoreProfileModal';
 
 const AccountPage = () => {
-  const { user, handleLogout, setCurrentPage, setShowCloseShift, dailyStatus, handleResetData } = useApp();
+  const { user, handleLogout, setCurrentPage, setShowCloseShift, dailyStatus, handleResetData, licenseInfo, isAdmin } = useApp();
   const [showStoreProfile, setShowStoreProfile] = useState(false);
 
   const menuItems = [
@@ -22,6 +22,13 @@ const AccountPage = () => {
       colorClass: 'bg-transfer-soft text-transfer',
       action: () => setCurrentPage('admin-settings'),
     },
+    ...(isAdmin ? [{
+      label: 'Kelola Lisensi',
+      desc: 'Buat, cabut, dan kelola kode lisensi',
+      icon: <ShieldCheck className="w-5 h-5" />,
+      colorClass: 'bg-setor-soft text-setor',
+      action: () => setCurrentPage('license-management'),
+    }] : []),
     {
       label: 'Tutup Shift',
       desc: 'Akhiri shift dan lihat ringkasan',
@@ -71,8 +78,25 @@ const AccountPage = () => {
           <div>
             <p className="text-lg font-black text-foreground">{user?.name}</p>
             <p className="text-sm text-muted-foreground">{user?.phone}</p>
+            {isAdmin && <span className="px-2 py-0.5 bg-setor-soft text-setor text-[10px] font-bold rounded-full">Admin</span>}
           </div>
         </div>
+
+        {/* License info */}
+        {licenseInfo?.valid && !isAdmin && (
+          <div className="bg-card rounded-2xl p-4 shadow-card border border-border flex items-center gap-3">
+            <div className="w-10 h-10 bg-setor-soft rounded-xl flex items-center justify-center">
+              <KeyRound className="w-5 h-5 text-setor" />
+            </div>
+            <div className="flex-1">
+              <p className="text-xs font-bold text-foreground">Lisensi Aktif</p>
+              <p className="text-[10px] text-muted-foreground">
+                Berlaku {licenseInfo.days_remaining} hari lagi · 
+                s/d {licenseInfo.expires_at ? new Date(licenseInfo.expires_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}
+              </p>
+            </div>
+          </div>
+        )}
 
         {menuItems.map((item, i) => (
           <button

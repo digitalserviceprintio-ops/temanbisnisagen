@@ -86,6 +86,48 @@ export type Database = {
         }
         Relationships: []
       }
+      licenses: {
+        Row: {
+          activated_at: string | null
+          created_at: string
+          created_by: string | null
+          duration_days: number
+          expires_at: string | null
+          id: string
+          license_key: string
+          note: string | null
+          status: string
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          activated_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          duration_days?: number
+          expires_at?: string | null
+          id?: string
+          license_key: string
+          note?: string | null
+          status?: string
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          activated_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          duration_days?: number
+          expires_at?: string | null
+          id?: string
+          license_key?: string
+          note?: string | null
+          status?: string
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -185,12 +227,35 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      activate_license: {
+        Args: { _license_key: string; _user_email: string; _user_id: string }
+        Returns: Json
+      }
+      check_license: { Args: { _user_id: string }; Returns: Json }
+      has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
