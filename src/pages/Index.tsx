@@ -1,6 +1,7 @@
 import React from 'react';
 import { AppProvider, useApp } from '@/context/AppContext';
 import AuthPage from '@/components/AuthPage';
+import LicenseActivationPage from '@/components/LicenseActivationPage';
 import OpenStorePage from '@/components/OpenStorePage';
 import DashboardPage from '@/components/DashboardPage';
 import CashbookPage from '@/components/CashbookPage';
@@ -9,6 +10,7 @@ import AccountPage from '@/components/AccountPage';
 import AdminSettingsPage from '@/components/AdminSettingsPage';
 import FaqPage from '@/components/FaqPage';
 import MonthlyReportPage from '@/components/MonthlyReportPage';
+import LicenseManagementPage from '@/components/LicenseManagementPage';
 import BottomNav from '@/components/BottomNav';
 import TransactionModal from '@/components/TransactionModal';
 import TopupModal from '@/components/TopupModal';
@@ -17,9 +19,24 @@ import CloseShiftModal from '@/components/CloseShiftModal';
 import NotificationToast from '@/components/NotificationToast';
 
 const AppContent = () => {
-  const { user, currentPage } = useApp();
+  const { user, currentPage, licenseInfo, isAdmin, refreshLicense, handleLogout, userEmail } = useApp();
 
   if (!user) return <AuthPage onAuthSuccess={() => {}} />;
+
+  // License check: admins bypass, others need valid license
+  if (!isAdmin && (!licenseInfo || !licenseInfo.valid)) {
+    return (
+      <LicenseActivationPage
+        userId={user.id}
+        userEmail={userEmail}
+        licenseInfo={licenseInfo}
+        onActivated={refreshLicense}
+        onLogout={handleLogout}
+      />
+    );
+  }
+
+  const hiddenNavPages: string[] = ['open-store', 'admin-settings', 'faq', 'monthly-report', 'license-management'];
 
   return (
     <div className="min-h-screen bg-background max-w-lg mx-auto relative">
@@ -31,8 +48,9 @@ const AppContent = () => {
       {currentPage === 'account' && <AccountPage />}
       {currentPage === 'admin-settings' && <AdminSettingsPage />}
       {currentPage === 'faq' && <FaqPage />}
+      {currentPage === 'license-management' && <LicenseManagementPage />}
 
-      {currentPage !== 'open-store' && currentPage !== 'admin-settings' && currentPage !== 'faq' && currentPage !== 'monthly-report' && <BottomNav />}
+      {!hiddenNavPages.includes(currentPage) && <BottomNav />}
 
       <TransactionModal />
       <TopupModal />
