@@ -80,6 +80,15 @@ export const deleteLicense = async (licenseId: string) => {
   if (error) console.error('deleteLicense error:', error);
 };
 
+export const extendLicense = async (licenseId: string, extraDays: number) => {
+  const { data, error } = await supabase.rpc('extend_license', {
+    _license_id: licenseId,
+    _extra_days: extraDays,
+  });
+  if (error) { console.error('extendLicense error:', error); return { success: false, message: 'Terjadi kesalahan' }; }
+  return data as unknown as { success: boolean; message: string; new_expires_at?: string };
+};
+
 function generateLicenseKey(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   const segments = 4;

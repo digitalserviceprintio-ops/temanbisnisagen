@@ -255,6 +255,10 @@ export type Database = {
         Returns: Json
       }
       check_license: { Args: { _user_id: string }; Returns: Json }
+      extend_license: {
+        Args: { _extra_days: number; _license_id: string }
+        Returns: Json
+      }
       has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
     }
     Enums: {
