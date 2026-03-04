@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ArrowLeft, Plus, Copy, Trash2, Ban, KeyRound, Check } from 'lucide-react';
-import { fetchAllLicenses, createLicense, revokeLicense, deleteLicense, type LicenseRow } from '@/lib/license-data';
+import { ArrowLeft, Plus, Copy, Trash2, Ban, KeyRound, Check, CalendarPlus } from 'lucide-react';
+import { fetchAllLicenses, createLicense, revokeLicense, deleteLicense, extendLicense, type LicenseRow } from '@/lib/license-data';
 import { useApp } from '@/context/AppContext';
 
 const LicenseManagementPage = () => {
@@ -12,6 +12,9 @@ const LicenseManagementPage = () => {
   const [note, setNote] = useState('');
   const [creating, setCreating] = useState(false);
   const [copiedKey, setCopiedKey] = useState('');
+  const [extendingId, setExtendingId] = useState<string | null>(null);
+  const [extendDays, setExtendDays] = useState(30);
+  const [extendLoading, setExtendLoading] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -53,6 +56,18 @@ const LicenseManagementPage = () => {
     load();
   };
 
+  const handleExtend = async (id: string) => {
+    if (extendDays < 1) return;
+    setExtendLoading(true);
+    const result = await extendLicense(id, extendDays);
+    setExtendLoading(false);
+    if (result.success) {
+      setExtendingId(null);
+      setExtendDays(30);
+      load();
+    }
+  };
+
   const statusColor = (s: string) => {
     if (s === 'active') return 'bg-setor-soft text-setor';
     if (s === 'unused') return 'bg-transfer-soft text-transfer';
@@ -80,7 +95,6 @@ const LicenseManagementPage = () => {
       </div>
 
       <div className="px-6 -mt-5 space-y-3">
-        {/* Create form */}
         {showCreate && (
           <div className="bg-card rounded-3xl p-5 shadow-elevated space-y-3">
             <p className="text-sm font-bold text-foreground">Buat Lisensi Baru</p>
@@ -103,7 +117,6 @@ const LicenseManagementPage = () => {
           </div>
         )}
 
-        {/* License list */}
         {loading ? (
           <div className="text-center py-8 text-muted-foreground text-sm">Memuat...</div>
         ) : licenses.length === 0 ? (
@@ -134,11 +147,45 @@ const LicenseManagementPage = () => {
                 Berlaku sampai: {new Date(lic.expires_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
               </p>
             )}
-            <div className="flex gap-2 pt-1">
-              {lic.status === 'active' && (
-                <button onClick={() => handleRevoke(lic.id)} className="flex items-center gap-1 text-[10px] font-bold text-destructive">
-                  <Ban className="w-3 h-3" /> Cabut
+
+            {/* Extend form inline */}
+            {extendingId === lic.id && (
+              <div className="flex items-center gap-2 pt-1">
+                <input
+                  type="number"
+                  value={extendDays}
+                  onChange={e => setExtendDays(Number(e.target.value))}
+                  min={1}
+                  className="w-20 px-2 py-1.5 bg-secondary rounded-lg text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  placeholder="Hari"
+                />
+                <span className="text-[10px] text-muted-foreground">hari</span>
+                <button
+                  onClick={() => handleExtend(lic.id)}
+                  disabled={extendLoading || extendDays < 1}
+                  className="px-3 py-1.5 gradient-primary text-primary-foreground rounded-lg text-[10px] font-bold disabled:opacity-50"
+                >
+                  {extendLoading ? '...' : 'OK'}
                 </button>
+                <button
+                  onClick={() => setExtendingId(null)}
+                  className="px-2 py-1.5 bg-secondary text-foreground rounded-lg text-[10px] font-bold"
+                >
+                  Batal
+                </button>
+              </div>
+            )}
+
+            <div className="flex gap-3 pt-1">
+              {lic.status === 'active' && (
+                <>
+                  <button onClick={() => { setExtendingId(lic.id); setExtendDays(30); }} className="flex items-center gap-1 text-[10px] font-bold text-primary">
+                    <CalendarPlus className="w-3 h-3" /> Perpanjang
+                  </button>
+                  <button onClick={() => handleRevoke(lic.id)} className="flex items-center gap-1 text-[10px] font-bold text-destructive">
+                    <Ban className="w-3 h-3" /> Cabut
+                  </button>
+                </>
               )}
               {lic.status !== 'active' && (
                 <button onClick={() => handleDelete(lic.id)} className="flex items-center gap-1 text-[10px] font-bold text-destructive">
