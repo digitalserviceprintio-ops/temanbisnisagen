@@ -17,6 +17,7 @@ import TopupModal from '@/components/TopupModal';
 import ReceiptModal from '@/components/ReceiptModal';
 import CloseShiftModal from '@/components/CloseShiftModal';
 import NotificationToast from '@/components/NotificationToast';
+import OfflineIndicator from '@/components/OfflineIndicator';
 
 const AppContent = () => {
   const { user, currentPage, licenseInfo, isAdmin, refreshLicense, handleLogout, userEmail } = useApp();
@@ -57,6 +58,7 @@ const AppContent = () => {
       <ReceiptModal />
       <CloseShiftModal />
       <NotificationToast />
+      <OfflineIndicator />
     </div>
   );
 };
