@@ -23,6 +23,14 @@ export const fetchTransactions = async (userId: string, date: string): Promise<T
 };
 
 export const insertTransaction = async (tx: Transaction, userId: string, shiftDate: string) => {
+  const { isOnline, addToOfflineQueue } = await import('@/lib/offline');
+  
+  if (!isOnline()) {
+    addToOfflineQueue(tx, userId, shiftDate);
+    console.log('Offline: transaction queued locally');
+    return;
+  }
+
   const { error } = await supabase.from('transactions').insert({
     id: tx.id,
     user_id: userId,
@@ -35,7 +43,11 @@ export const insertTransaction = async (tx: Transaction, userId: string, shiftDa
     status: tx.status,
     shift_date: shiftDate,
   });
-  if (error) console.error('insertTransaction error:', error);
+  if (error) {
+    // If insert fails, queue offline
+    addToOfflineQueue(tx, userId, shiftDate);
+    console.error('insertTransaction error, queued offline:', error);
+  }
 };
 
 // --- Admin Settings ---

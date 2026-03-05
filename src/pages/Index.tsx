@@ -58,6 +58,7 @@ const AppContent = () => {
       <ReceiptModal />
       <CloseShiftModal />
       <NotificationToast />
+      <OfflineIndicator />
     </div>
   );
 };
