@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Smartphone, UserPlus, KeyRound, Mail, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Smartphone, UserPlus, KeyRound, Mail, Loader2, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import ForgotPasswordPage from './ForgotPasswordPage';
+import logoTba from '@/assets/logo-tba.png';
 
 const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
   const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgot'>('login');
@@ -49,10 +50,10 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
       <div className="w-full max-w-sm animate-scale-in">
         {/* Logo */}
         <div className="text-center mb-10">
-          <div className="w-20 h-20 gradient-primary rounded-3xl flex items-center justify-center mx-auto mb-5 shadow-elevated">
-            <ShieldCheck className="w-10 h-10 text-primary-foreground" />
+          <div className="w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-5">
+            <img src={logoTba} alt="Teman Bisnis Agen Logo" className="w-24 h-24 object-contain" />
           </div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground">Teman Agen Bisnis</h1>
+          <h1 className="text-2xl font-black tracking-tight text-foreground">Teman Bisnis Agen</h1>
           <p className="text-muted-foreground text-sm mt-1">
             {authMode === 'login' ? 'Masuk ke Akun Anda' : 'Daftar Akun Baru'}
           </p>
