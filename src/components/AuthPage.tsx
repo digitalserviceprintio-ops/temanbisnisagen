@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Smartphone, UserPlus, KeyRound, Mail, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Smartphone, UserPlus, KeyRound, Mail, Loader2, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import ForgotPasswordPage from './ForgotPasswordPage';
+import logoTba from '@/assets/logo-tba.png';
 
 const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
   const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgot'>('login');
