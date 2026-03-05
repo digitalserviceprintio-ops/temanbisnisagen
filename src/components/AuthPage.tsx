@@ -52,7 +52,7 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
           <div className="w-20 h-20 gradient-primary rounded-3xl flex items-center justify-center mx-auto mb-5 shadow-elevated">
             <ShieldCheck className="w-10 h-10 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground">Teman Agen Bisnis</h1>
+          <h1 className="text-2xl font-black tracking-tight text-foreground">Teman Bisnis Agen</h1>
           <p className="text-muted-foreground text-sm mt-1">
             {authMode === 'login' ? 'Masuk ke Akun Anda' : 'Daftar Akun Baru'}
           </p>

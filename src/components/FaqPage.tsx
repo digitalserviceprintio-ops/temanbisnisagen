@@ -4,7 +4,7 @@ import { useApp } from '@/context/AppContext';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 
 const faqs = [
-  { q: 'Apa itu Teman Agen Bisnis?', a: 'Teman Agen Bisnis adalah aplikasi pencatatan transaksi untuk agen branchless banking. Digunakan untuk mencatat tarik tunai, setor tunai, transfer, dan top up saldo.' },
+  { q: 'Apa itu Teman Bisnis Agen?', a: 'Teman Bisnis Agen adalah aplikasi pencatatan transaksi untuk agen branchless banking. Digunakan untuk mencatat tarik tunai, setor tunai, transfer, dan top up saldo.' },
   { q: 'Bagaimana cara memulai shift?', a: 'Setelah login, Anda akan diarahkan ke halaman Buka Toko. Masukkan saldo kas laci dan saldo bank awal, lalu tekan "Mulai Shift".' },
   { q: 'Bagaimana biaya admin dihitung?', a: 'Biaya admin dihitung berdasarkan kelipatan nominal transaksi. Anda bisa mengatur biaya dan kelipatan di menu Akun → Atur Biaya Admin.' },
   { q: 'Bagaimana cara menutup shift?', a: 'Buka menu Akun → Tutup Shift. Anda akan melihat ringkasan transaksi dan selisih saldo hari ini.' },
