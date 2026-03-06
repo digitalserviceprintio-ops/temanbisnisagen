@@ -51,6 +51,7 @@ const AppContent = () => {
       {currentPage === 'admin-settings' && <AdminSettingsPage />}
       {currentPage === 'faq' && <FaqPage />}
       {currentPage === 'license-management' && <LicenseManagementPage />}
+      {currentPage === 'pricing' && <PricingPage />}
 
       {!hiddenNavPages.includes(currentPage) && <BottomNav />}
 
