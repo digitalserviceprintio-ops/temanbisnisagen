@@ -1,9 +1,9 @@
 import React from 'react';
-import { Crown, X, MessageCircle } from 'lucide-react';
+import { Crown, X } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 
 const UpgradeBanner = () => {
-  const { licenseInfo, isAdmin } = useApp();
+  const { licenseInfo, isAdmin, setCurrentPage } = useApp();
   const [dismissed, setDismissed] = React.useState(false);
 
   if (isAdmin || dismissed || !licenseInfo?.valid) return null;
@@ -27,13 +27,7 @@ const UpgradeBanner = () => {
             Upgrade ke Premium untuk akses tanpa batas dan fitur lengkap.
           </p>
           <button
-            onClick={() => {
-              const { setCurrentPage } = require('@/context/AppContext');
-            }}
-            className="hidden"
-          />
-          <button
-            onClick={() => window.dispatchEvent(new CustomEvent('navigate-pricing'))}
+            onClick={() => setCurrentPage('pricing')}
             className={`mt-2 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 active:scale-[0.97] transition-transform ${urgent ? 'bg-destructive text-destructive-foreground' : 'gradient-primary text-primary-foreground'}`}
           >
             <Crown className="w-3.5 h-3.5" />
