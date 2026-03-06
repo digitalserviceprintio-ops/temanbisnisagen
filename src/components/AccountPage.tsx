@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LogOut, User, Settings, ChevronRight, Clock, HelpCircle, MessageCircle, Code, RotateCcw, Store, KeyRound, ShieldCheck } from 'lucide-react';
+import { LogOut, User, Settings, ChevronRight, Clock, HelpCircle, MessageCircle, Code, RotateCcw, Store, KeyRound, ShieldCheck, Crown } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import StoreProfileModal from './StoreProfileModal';
 
@@ -28,7 +28,13 @@ const AccountPage = () => {
       icon: <ShieldCheck className="w-5 h-5" />,
       colorClass: 'bg-setor-soft text-setor',
       action: () => setCurrentPage('license-management'),
-    }] : []),
+    }] : [{
+      label: 'Paket & Harga',
+      desc: 'Lihat paket premium dan upgrade',
+      icon: <Crown className="w-5 h-5" />,
+      colorClass: 'bg-topup-soft text-topup',
+      action: () => setCurrentPage('pricing'),
+    }]),
     {
       label: 'Tutup Shift',
       desc: 'Akhiri shift dan lihat ringkasan',
