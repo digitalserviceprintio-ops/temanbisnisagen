@@ -38,7 +38,7 @@ const AppContent = () => {
     );
   }
 
-  const hiddenNavPages: string[] = ['open-store', 'admin-settings', 'faq', 'monthly-report', 'license-management'];
+  const hiddenNavPages: string[] = ['open-store', 'admin-settings', 'faq', 'monthly-report', 'license-management', 'pricing'];
 
   return (
     <div className="min-h-screen bg-background max-w-lg mx-auto relative">
