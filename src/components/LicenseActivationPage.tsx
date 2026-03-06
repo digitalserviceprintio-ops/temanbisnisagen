@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { KeyRound, ShieldCheck, Clock, AlertCircle } from 'lucide-react';
+import { KeyRound, ShieldCheck, Clock, AlertCircle, Crown, MessageCircle } from 'lucide-react';
 import { activateLicense, type LicenseInfo } from '@/lib/license-data';
 
 interface Props {
