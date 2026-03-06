@@ -73,6 +73,9 @@ const DashboardPage = () => {
         </div>
       </div>
 
+      {/* Upgrade Banner */}
+      <UpgradeBanner />
+
       {/* Quick Actions */}
       <div className="px-6 -mt-5">
         <div className="bg-card rounded-3xl p-4 shadow-elevated grid grid-cols-4 gap-2">
