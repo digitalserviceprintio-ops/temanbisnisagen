@@ -3,6 +3,7 @@ import { ArrowUpRight, ArrowDownLeft, TrendingUp, PlusCircle, ChevronRight } fro
 import { useApp } from '@/context/AppContext';
 import { formatCurrency, formatTime } from '@/lib/format';
 import PromoCarousel from './PromoCarousel';
+import UpgradeBanner from './UpgradeBanner';
 
 const DigitalClock = () => {
   const [now, setNow] = useState(new Date());
@@ -71,6 +72,9 @@ const DashboardPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Upgrade Banner */}
+      <UpgradeBanner />
 
       {/* Quick Actions */}
       <div className="px-6 -mt-5">

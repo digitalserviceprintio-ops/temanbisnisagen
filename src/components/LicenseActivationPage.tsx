@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { KeyRound, ShieldCheck, Clock, AlertCircle } from 'lucide-react';
+import { KeyRound, ShieldCheck, Clock, AlertCircle, Crown, MessageCircle } from 'lucide-react';
 import { activateLicense, type LicenseInfo } from '@/lib/license-data';
 
 interface Props {
@@ -85,8 +85,32 @@ const LicenseActivationPage = ({ userId, userEmail, licenseInfo, onActivated, on
           </button>
         </div>
 
+        {/* Premium upgrade offer */}
+        <div className="bg-card rounded-3xl p-5 shadow-card border border-border space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-topup-soft rounded-xl flex items-center justify-center">
+              <Crown className="w-5 h-5 text-topup" />
+            </div>
+            <div>
+              <p className="text-sm font-black text-foreground">Upgrade ke Premium</p>
+              <p className="text-[10px] text-muted-foreground">Akses tanpa batas & fitur lengkap</p>
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground"><span className="text-setor">✓</span> 90 hari — Rp 50.000</div>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground"><span className="text-setor">✓</span> 365 hari — Rp 150.000</div>
+          </div>
+          <button
+            onClick={() => window.open('https://wa.me/6282186371356?text=Halo%2C%20saya%20ingin%20upgrade%20ke%20Premium%20Teman%20Bisnis%20Agen', '_blank')}
+            className="w-full py-3 bg-topup text-white font-bold rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+          >
+            <MessageCircle className="w-4 h-4" />
+            Hubungi Admin via WhatsApp
+          </button>
+        </div>
+
         <p className="text-center text-xs text-muted-foreground">
-          Hubungi admin untuk mendapatkan kode lisensi.
+          Punya kode lisensi? Masukkan di atas untuk mengaktifkan.
         </p>
 
         <button
