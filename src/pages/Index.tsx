@@ -11,6 +11,7 @@ import AdminSettingsPage from '@/components/AdminSettingsPage';
 import FaqPage from '@/components/FaqPage';
 import MonthlyReportPage from '@/components/MonthlyReportPage';
 import LicenseManagementPage from '@/components/LicenseManagementPage';
+import PricingPage from '@/components/PricingPage';
 import BottomNav from '@/components/BottomNav';
 import TransactionModal from '@/components/TransactionModal';
 import TopupModal from '@/components/TopupModal';
