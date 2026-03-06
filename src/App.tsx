@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import ResetPassword from "./pages/ResetPassword";
+import InstallPage from "./pages/InstallPage";
 import NotFound from "./pages/NotFound";
 import SplashScreen from "./components/SplashScreen";
 
