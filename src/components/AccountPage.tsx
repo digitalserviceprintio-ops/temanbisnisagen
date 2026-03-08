@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { LogOut, User, Settings, ChevronRight, Clock, HelpCircle, MessageCircle, Code, RotateCcw, Store, KeyRound, ShieldCheck, Crown } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import StoreProfileModal from './StoreProfileModal';
+import { APP_VERSION, APP_DEVELOPER } from '@/lib/version';
 
 const AccountPage = () => {
   const { user, handleLogout, setCurrentPage, setShowCloseShift, dailyStatus, handleResetData, licenseInfo, isAdmin } = useApp();
