@@ -22,13 +22,22 @@ const AccountPage = () => {
       colorClass: 'bg-transfer-soft text-transfer',
       action: () => setCurrentPage('admin-settings'),
     },
-    ...(isAdmin ? [{
-      label: 'Kelola Lisensi',
-      desc: 'Buat, cabut, dan kelola kode lisensi',
-      icon: <ShieldCheck className="w-5 h-5" />,
-      colorClass: 'bg-setor-soft text-setor',
-      action: () => setCurrentPage('license-management'),
-    }] : [{
+    ...(isAdmin ? [
+      {
+        label: 'Kelola Lisensi',
+        desc: 'Buat, cabut, dan kelola kode lisensi',
+        icon: <ShieldCheck className="w-5 h-5" />,
+        colorClass: 'bg-setor-soft text-setor',
+        action: () => setCurrentPage('license-management'),
+      },
+      {
+        label: 'Verifikasi Pembayaran',
+        desc: 'Setujui pembayaran & aktivasi lisensi',
+        icon: <Crown className="w-5 h-5" />,
+        colorClass: 'bg-topup-soft text-topup',
+        action: () => setCurrentPage('payment-management'),
+      },
+    ] : [{
       label: 'Paket & Harga',
       desc: 'Lihat paket premium dan upgrade',
       icon: <Crown className="w-5 h-5" />,

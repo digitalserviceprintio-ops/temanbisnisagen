@@ -12,6 +12,8 @@ import FaqPage from '@/components/FaqPage';
 import MonthlyReportPage from '@/components/MonthlyReportPage';
 import LicenseManagementPage from '@/components/LicenseManagementPage';
 import PricingPage from '@/components/PricingPage';
+import PaymentPage from '@/components/PaymentPage';
+import PaymentManagementPage from '@/components/PaymentManagementPage';
 import BottomNav from '@/components/BottomNav';
 import TransactionModal from '@/components/TransactionModal';
 import TopupModal from '@/components/TopupModal';
@@ -38,7 +40,7 @@ const AppContent = () => {
     );
   }
 
-  const hiddenNavPages: string[] = ['open-store', 'admin-settings', 'faq', 'monthly-report', 'license-management', 'pricing'];
+  const hiddenNavPages: string[] = ['open-store', 'admin-settings', 'faq', 'monthly-report', 'license-management', 'pricing', 'payment', 'payment-management'];
 
   return (
     <div className="min-h-screen bg-background max-w-lg mx-auto relative">
@@ -52,6 +54,8 @@ const AppContent = () => {
       {currentPage === 'faq' && <FaqPage />}
       {currentPage === 'license-management' && <LicenseManagementPage />}
       {currentPage === 'pricing' && <PricingPage />}
+      {currentPage === 'payment' && <PaymentPage />}
+      {currentPage === 'payment-management' && <PaymentManagementPage />}
 
       {!hiddenNavPages.includes(currentPage) && <BottomNav />}
 
