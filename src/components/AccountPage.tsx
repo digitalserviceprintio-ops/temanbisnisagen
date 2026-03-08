@@ -143,7 +143,7 @@ const AccountPage = () => {
         <div className="flex items-center justify-center gap-2 pt-4 pb-2">
           <Code className="w-3.5 h-3.5 text-muted-foreground" />
           <p className="text-[10px] text-muted-foreground font-medium tracking-wider">
-            Developed by <span className="font-black">AD-2026</span> · V.1.0
+            Developed by <span className="font-black">{APP_DEVELOPER}</span> · V.{APP_VERSION}
           </p>
         </div>
       </div>
