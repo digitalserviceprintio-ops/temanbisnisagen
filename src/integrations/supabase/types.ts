@@ -128,6 +128,51 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_orders: {
+        Row: {
+          admin_note: string | null
+          amount: number
+          created_at: string
+          duration_days: number
+          id: string
+          plan_name: string
+          proof_url: string | null
+          status: string
+          user_email: string
+          user_id: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          admin_note?: string | null
+          amount: number
+          created_at?: string
+          duration_days: number
+          id?: string
+          plan_name: string
+          proof_url?: string | null
+          status?: string
+          user_email?: string
+          user_id: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          admin_note?: string | null
+          amount?: number
+          created_at?: string
+          duration_days?: number
+          id?: string
+          plan_name?: string
+          proof_url?: string | null
+          status?: string
+          user_email?: string
+          user_id?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -252,6 +297,10 @@ export type Database = {
     Functions: {
       activate_license: {
         Args: { _license_key: string; _user_email: string; _user_id: string }
+        Returns: Json
+      }
+      approve_payment: {
+        Args: { _admin_id: string; _order_id: string }
         Returns: Json
       }
       check_license: { Args: { _user_id: string }; Returns: Json }
