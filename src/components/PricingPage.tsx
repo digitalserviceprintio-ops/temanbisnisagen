@@ -134,11 +134,10 @@ const PricingPage = () => {
               </div>
             ) : (
               <button
-                onClick={() => handleOrder(plan.name)}
+                onClick={() => setCurrentPage('payment' as any)}
                 className={`w-full py-3 font-bold rounded-xl text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-transform ${plan.popular ? 'gradient-primary text-primary-foreground' : 'bg-setor text-white'}`}
               >
-                <MessageCircle className="w-4 h-4" />
-                Pesan via WhatsApp
+                Bayar Sekarang
               </button>
             )}
           </div>
