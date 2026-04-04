@@ -14,6 +14,7 @@ import LicenseManagementPage from '@/components/LicenseManagementPage';
 import PricingPage from '@/components/PricingPage';
 import PaymentPage from '@/components/PaymentPage';
 import PaymentManagementPage from '@/components/PaymentManagementPage';
+import PaymentHistoryPage from '@/components/PaymentHistoryPage';
 import BottomNav from '@/components/BottomNav';
 import TransactionModal from '@/components/TransactionModal';
 import TopupModal from '@/components/TopupModal';
