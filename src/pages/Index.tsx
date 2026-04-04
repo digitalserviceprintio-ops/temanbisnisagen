@@ -24,8 +24,16 @@ import NotificationToast from '@/components/NotificationToast';
 import OfflineIndicator from '@/components/OfflineIndicator';
 import { Loader2 } from 'lucide-react';
 
-const AppContent = React.forwardRef<HTMLDivElement>((_, ref) => {
-  const { user, dataLoading, currentPage, licenseInfo, isAdmin, refreshLicense, handleLogout, userEmail } = useApp();
+const AppContent = () => {
+  const { user, authReady, dataLoading, currentPage, licenseInfo, isAdmin, refreshLicense, handleLogout, userEmail } = useApp();
+
+  if (!authReady) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-3">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (!user) return <AuthPage onAuthSuccess={() => {}} />;
 
@@ -37,8 +45,6 @@ const AppContent = React.forwardRef<HTMLDivElement>((_, ref) => {
       </div>
     );
   }
-
-  if (!user) return <AuthPage onAuthSuccess={() => {}} />;
 
   // License check: admins bypass, others need valid license
   if (!isAdmin && (!licenseInfo || !licenseInfo.valid)) {
