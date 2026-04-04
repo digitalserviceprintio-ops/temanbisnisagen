@@ -57,6 +57,7 @@ const AppContent = () => {
       {currentPage === 'pricing' && <PricingPage />}
       {currentPage === 'payment' && <PaymentPage />}
       {currentPage === 'payment-management' && <PaymentManagementPage />}
+      {currentPage === 'payment-history' && <PaymentHistoryPage />}
 
       {!hiddenNavPages.includes(currentPage) && <BottomNav />}
 
