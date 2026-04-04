@@ -22,9 +22,21 @@ import ReceiptModal from '@/components/ReceiptModal';
 import CloseShiftModal from '@/components/CloseShiftModal';
 import NotificationToast from '@/components/NotificationToast';
 import OfflineIndicator from '@/components/OfflineIndicator';
+import { Loader2 } from 'lucide-react';
 
 const AppContent = () => {
-  const { user, currentPage, licenseInfo, isAdmin, refreshLicense, handleLogout, userEmail } = useApp();
+  const { user, dataLoading, currentPage, licenseInfo, isAdmin, refreshLicense, handleLogout, userEmail } = useApp();
+
+  if (!user) return <AuthPage onAuthSuccess={() => {}} />;
+
+  if (dataLoading) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-3">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <p className="text-sm text-muted-foreground font-medium">Memuat data...</p>
+      </div>
+    );
+  }
 
   if (!user) return <AuthPage onAuthSuccess={() => {}} />;
 
