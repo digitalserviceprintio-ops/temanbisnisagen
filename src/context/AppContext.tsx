@@ -312,7 +312,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AppContext.Provider value={{
-      user, currentPage, setCurrentPage, dailyStatus, transactions, balance,
+      user, dataLoading, currentPage, setCurrentPage, dailyStatus, transactions, balance,
       notifications, adminSettings, showTransactionModal, setShowTransactionModal,
       showTopupModal, setShowTopupModal, showReceipt, setShowReceipt,
       showCloseShift, setShowCloseShift,
