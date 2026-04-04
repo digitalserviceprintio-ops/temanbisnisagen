@@ -70,6 +70,13 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
           </p>
         </div>
 
+        {/* Success */}
+        {success && (
+          <div className="bg-green-500/10 text-green-700 dark:text-green-400 text-xs font-bold p-3 rounded-2xl mb-4 text-center">
+            {success}
+          </div>
+        )}
+
         {/* Error */}
         {error && (
           <div className="bg-destructive/10 text-destructive text-xs font-bold p-3 rounded-2xl mb-4 text-center">
