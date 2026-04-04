@@ -24,7 +24,7 @@ import NotificationToast from '@/components/NotificationToast';
 import OfflineIndicator from '@/components/OfflineIndicator';
 import { Loader2 } from 'lucide-react';
 
-const AppContent = () => {
+const AppContent = React.forwardRef<HTMLDivElement>((_, ref) => {
   const { user, dataLoading, currentPage, licenseInfo, isAdmin, refreshLicense, handleLogout, userEmail } = useApp();
 
   if (!user) return <AuthPage onAuthSuccess={() => {}} />;

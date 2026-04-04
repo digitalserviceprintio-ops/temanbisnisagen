@@ -74,7 +74,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [showTopupModal, setShowTopupModal] = useState(false);
   const [showReceipt, setShowReceipt] = useState<Transaction | null>(null);
   const [showCloseShift, setShowCloseShift] = useState(false);
-  const [authReady, setAuthReady] = useState(true);
+  const [authReady, setAuthReady] = useState(false);
 
   const addNotification = useCallback((msg: string) => {
     const id = Date.now();
