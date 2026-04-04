@@ -8,6 +8,7 @@ import {
   fetchStoreProfile, upsertStoreProfile, type StoreProfileData,
 } from '@/lib/supabase-data';
 import { checkLicense, checkIsAdmin, type LicenseInfo } from '@/lib/license-data';
+import { useAdminPaymentNotifications } from '@/hooks/use-admin-payment-notifications';
 
 interface AppContextType {
   user: AppUser | null;
