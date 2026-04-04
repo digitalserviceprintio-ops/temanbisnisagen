@@ -11,6 +11,7 @@ import { checkLicense, checkIsAdmin, type LicenseInfo } from '@/lib/license-data
 import { useAdminPaymentNotifications } from '@/hooks/use-admin-payment-notifications';
 
 interface AppContextType {
+  dataLoading: boolean;
   user: AppUser | null;
   currentPage: PageId;
   setCurrentPage: (page: PageId) => void;
