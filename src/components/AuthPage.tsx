@@ -171,7 +171,7 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
             {authMode === 'login' ? 'Belum punya akun?' : 'Sudah punya akun?'}
           </p>
           <button
-            onClick={() => { setAuthMode(authMode === 'login' ? 'register' : 'login'); setError(''); }}
+            onClick={() => { setAuthMode(authMode === 'login' ? 'register' : 'login'); setError(''); setSuccess(''); }}
             className="text-primary font-bold text-xs uppercase tracking-widest hover:underline"
           >
             {authMode === 'login' ? 'Daftar Akun Baru' : 'Kembali Ke Login'}
