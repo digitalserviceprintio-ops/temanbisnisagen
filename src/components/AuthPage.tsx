@@ -9,6 +9,7 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
   const [formData, setFormData] = useState({ email: '', password: '', name: '', phone: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async () => {
