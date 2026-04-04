@@ -14,8 +14,13 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
 
   const onSubmit = async () => {
     setError('');
+    setSuccess('');
     if (authMode === 'register' && formData.password.length < 6) {
       setError('Password minimal 6 karakter!');
+      return;
+    }
+    if (!formData.email || !formData.password) {
+      setError('Email dan password wajib diisi!');
       return;
     }
     setLoading(true);
@@ -27,7 +32,7 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
         });
         if (error) throw error;
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
           options: {
@@ -35,6 +40,12 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
           },
         });
         if (error) throw error;
+        // Check if email confirmation is required
+        if (data.user && !data.session) {
+          setSuccess('Pendaftaran berhasil! Silakan cek email Anda untuk verifikasi.');
+          setLoading(false);
+          return;
+        }
       }
       // Don't setLoading(false) on success - let AppContext handle the transition
     } catch (err: any) {
