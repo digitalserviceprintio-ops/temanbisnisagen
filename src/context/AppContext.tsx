@@ -147,26 +147,29 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setIsAdmin(admin);
   }, [user]);
 
+  const [dataLoading, setDataLoading] = useState(false);
+
   // Load cloud data when user logs in
   useEffect(() => {
     if (!user) return;
+    setDataLoading(true);
     const loadData = async () => {
-      // Check license & admin
-      const [info, admin] = await Promise.all([
+      const today = new Date().toISOString().split('T')[0];
+
+      // Fetch everything in parallel
+      const [info, admin, settings, sp, status] = await Promise.all([
         checkLicense(user.id),
         checkIsAdmin(user.id),
+        fetchAdminSettings(user.id),
+        fetchStoreProfile(user.id),
+        fetchDailyStatus(user.id, today),
       ]);
+
       setLicenseInfo(info);
       setIsAdmin(admin);
-
-      const settings = await fetchAdminSettings(user.id);
       if (settings) setAdminSettings(settings);
-
-      const sp = await fetchStoreProfile(user.id);
       if (sp) setStoreProfile(sp);
 
-      const today = new Date().toISOString().split('T')[0];
-      const status = await fetchDailyStatus(user.id, today);
       if (status) {
         setDailyStatus(status);
         const txs = await fetchTransactions(user.id, today);
@@ -190,6 +193,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setCurrentPage('open-store');
       }
+      setDataLoading(false);
     };
     loadData();
   }, [user]);

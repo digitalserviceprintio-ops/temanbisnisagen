@@ -13,6 +13,10 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
 
   const onSubmit = async () => {
     setError('');
+    if (authMode === 'register' && formData.password.length < 6) {
+      setError('Password minimal 6 karakter!');
+      return;
+    }
     setLoading(true);
     try {
       if (authMode === 'login') {
@@ -22,11 +26,6 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
         });
         if (error) throw error;
       } else {
-        if (formData.password.length < 6) {
-          setError('Password minimal 6 karakter!');
-          setLoading(false);
-          return;
-        }
         const { error } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
@@ -36,9 +35,9 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
         });
         if (error) throw error;
       }
+      // Don't setLoading(false) on success - let AppContext handle the transition
     } catch (err: any) {
       setError(err.message || 'Terjadi kesalahan');
-    } finally {
       setLoading(false);
     }
   };
