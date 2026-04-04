@@ -129,6 +129,16 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
+  // Realtime admin payment notifications
+  useAdminPaymentNotifications(isAdmin, user?.id);
+
+  // Listen for navigation events from notifications
+  useEffect(() => {
+    const handler = () => setCurrentPage('payment-management');
+    window.addEventListener('navigate-to-payment-management', handler);
+    return () => window.removeEventListener('navigate-to-payment-management', handler);
+  }, []);
+
   const refreshLicense = useCallback(async () => {
     if (!user) return;
     const info = await checkLicense(user.id);
