@@ -9,12 +9,18 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
   const [formData, setFormData] = useState({ email: '', password: '', name: '', phone: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async () => {
     setError('');
+    setSuccess('');
     if (authMode === 'register' && formData.password.length < 6) {
       setError('Password minimal 6 karakter!');
+      return;
+    }
+    if (!formData.email || !formData.password) {
+      setError('Email dan password wajib diisi!');
       return;
     }
     setLoading(true);
@@ -26,7 +32,7 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
         });
         if (error) throw error;
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
           options: {
@@ -34,6 +40,12 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
           },
         });
         if (error) throw error;
+        // Check if email confirmation is required
+        if (data.user && !data.session) {
+          setSuccess('Pendaftaran berhasil! Silakan cek email Anda untuk verifikasi.');
+          setLoading(false);
+          return;
+        }
       }
       // Don't setLoading(false) on success - let AppContext handle the transition
     } catch (err: any) {
@@ -57,6 +69,13 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
             {authMode === 'login' ? 'Masuk ke Akun Anda' : 'Daftar Akun Baru'}
           </p>
         </div>
+
+        {/* Success */}
+        {success && (
+          <div className="bg-green-500/10 text-green-700 dark:text-green-400 text-xs font-bold p-3 rounded-2xl mb-4 text-center">
+            {success}
+          </div>
+        )}
 
         {/* Error */}
         {error && (
@@ -152,7 +171,7 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
             {authMode === 'login' ? 'Belum punya akun?' : 'Sudah punya akun?'}
           </p>
           <button
-            onClick={() => { setAuthMode(authMode === 'login' ? 'register' : 'login'); setError(''); }}
+            onClick={() => { setAuthMode(authMode === 'login' ? 'register' : 'login'); setError(''); setSuccess(''); }}
             className="text-primary font-bold text-xs uppercase tracking-widest hover:underline"
           >
             {authMode === 'login' ? 'Daftar Akun Baru' : 'Kembali Ke Login'}
