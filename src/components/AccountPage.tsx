@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LogOut, User, Settings, ChevronRight, Clock, HelpCircle, MessageCircle, Code, RotateCcw, Store, KeyRound, ShieldCheck, Crown } from 'lucide-react';
+import { LogOut, User, Settings, ChevronRight, Clock, HelpCircle, MessageCircle, Code, RotateCcw, Store, KeyRound, ShieldCheck, Crown, Receipt } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import StoreProfileModal from './StoreProfileModal';
 import { APP_VERSION, APP_DEVELOPER } from '@/lib/version';
@@ -38,13 +38,22 @@ const AccountPage = () => {
         colorClass: 'bg-topup-soft text-topup',
         action: () => setCurrentPage('payment-management'),
       },
-    ] : [{
-      label: 'Paket & Harga',
-      desc: 'Lihat paket premium dan upgrade',
-      icon: <Crown className="w-5 h-5" />,
-      colorClass: 'bg-topup-soft text-topup',
-      action: () => setCurrentPage('pricing'),
-    }]),
+    ] : [
+      {
+        label: 'Paket & Harga',
+        desc: 'Lihat paket premium dan upgrade',
+        icon: <Crown className="w-5 h-5" />,
+        colorClass: 'bg-topup-soft text-topup',
+        action: () => setCurrentPage('pricing'),
+      },
+      {
+        label: 'Riwayat Pembayaran',
+        desc: 'Lihat status pesanan upgrade Anda',
+        icon: <Receipt className="w-5 h-5" />,
+        colorClass: 'bg-transfer-soft text-transfer',
+        action: () => setCurrentPage('payment-history'),
+      },
+    ]),
     {
       label: 'Tutup Shift',
       desc: 'Akhiri shift dan lihat ringkasan',

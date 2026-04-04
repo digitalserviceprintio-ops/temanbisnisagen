@@ -8,6 +8,7 @@ import {
   fetchStoreProfile, upsertStoreProfile, type StoreProfileData,
 } from '@/lib/supabase-data';
 import { checkLicense, checkIsAdmin, type LicenseInfo } from '@/lib/license-data';
+import { useAdminPaymentNotifications } from '@/hooks/use-admin-payment-notifications';
 
 interface AppContextType {
   user: AppUser | null;
@@ -126,6 +127,16 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       clearTimeout(timeout);
       subscription.unsubscribe();
     };
+  }, []);
+
+  // Realtime admin payment notifications
+  useAdminPaymentNotifications(isAdmin, user?.id);
+
+  // Listen for navigation events from notifications
+  useEffect(() => {
+    const handler = () => setCurrentPage('payment-management');
+    window.addEventListener('navigate-to-payment-management', handler);
+    return () => window.removeEventListener('navigate-to-payment-management', handler);
   }, []);
 
   const refreshLicense = useCallback(async () => {
