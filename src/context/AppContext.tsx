@@ -85,47 +85,53 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   // Listen to auth state
   useEffect(() => {
-    // Timeout fallback in case auth listener doesn't fire
-    const timeout = setTimeout(() => {
-      setAuthReady(true);
-    }, 5000);
+    let mounted = true;
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      clearTimeout(timeout);
+      if (!mounted) return;
       if (session?.user) {
+        // Set authReady immediately so UI doesn't hang, then load profile
         setUserEmail(session.user.email || '');
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-
         setUser({
           id: session.user.id,
-          name: profile?.name || session.user.user_metadata?.name || 'Agen',
-          phone: profile?.phone || session.user.user_metadata?.phone || '',
-          role: profile?.role || 'Agen',
+          name: session.user.user_metadata?.name || 'Agen',
+          phone: session.user.user_metadata?.phone || '',
+          role: 'Agen',
           pin: '',
         });
-      } else {
-        setUser(null);
-      }
-      setAuthReady(true);
-    });
+        setAuthReady(true);
 
-    // Explicitly get session to trigger INITIAL_SESSION event
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        clearTimeout(timeout);
+        // Load profile in background to update name/phone
+        try {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+          if (mounted && profile) {
+            setUser(prev => prev ? {
+              ...prev,
+              name: profile.name || prev.name,
+              phone: profile.phone || prev.phone,
+              role: profile.role || prev.role,
+            } : prev);
+          }
+        } catch (e) {
+          console.error('Profile fetch error:', e);
+        }
+      } else {
         setUser(null);
         setAuthReady(true);
       }
-    }).catch(() => {
-      clearTimeout(timeout);
-      setAuthReady(true);
     });
 
+    // Fallback: if auth listener doesn't fire within 3s, mark ready
+    const timeout = setTimeout(() => {
+      if (mounted) setAuthReady(true);
+    }, 3000);
+
     return () => {
+      mounted = false;
       clearTimeout(timeout);
       subscription.unsubscribe();
     };
@@ -154,50 +160,73 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   // Load cloud data when user logs in
   useEffect(() => {
     if (!user) return;
+    let cancelled = false;
     setDataLoading(true);
+
     const loadData = async () => {
-      const today = new Date().toISOString().split('T')[0];
+      try {
+        const today = new Date().toISOString().split('T')[0];
 
-      // Fetch everything in parallel
-      const [info, admin, settings, sp, status] = await Promise.all([
-        checkLicense(user.id),
-        checkIsAdmin(user.id),
-        fetchAdminSettings(user.id),
-        fetchStoreProfile(user.id),
-        fetchDailyStatus(user.id, today),
-      ]);
+        // Fetch everything in parallel with timeout
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Data load timeout')), 10000)
+        );
 
-      setLicenseInfo(info);
-      setIsAdmin(admin);
-      if (settings) setAdminSettings(settings);
-      if (sp) setStoreProfile(sp);
+        const [info, admin, settings, sp, status] = await Promise.race([
+          Promise.all([
+            checkLicense(user.id),
+            checkIsAdmin(user.id),
+            fetchAdminSettings(user.id),
+            fetchStoreProfile(user.id),
+            fetchDailyStatus(user.id, today),
+          ]),
+          timeoutPromise,
+        ]) as [any, any, any, any, any];
 
-      if (status) {
-        setDailyStatus(status);
-        const txs = await fetchTransactions(user.id, today);
-        setTransactions(txs);
-        let cash = status.cashStart;
-        let bank = status.bankStart;
-        for (const tx of txs) {
-          if (tx.type === 'TOPUP') {
-            if (tx.target === 'KAS LACI') cash += tx.amount;
-            else bank += tx.amount;
-          } else if (tx.type === 'TARIK') {
-            cash -= tx.amount;
-            bank += tx.amount + tx.fee;
-          } else {
-            cash += tx.amount + tx.fee;
-            bank -= tx.amount;
+        if (cancelled) return;
+
+        setLicenseInfo(info);
+        setIsAdmin(admin);
+        if (settings) setAdminSettings(settings);
+        if (sp) setStoreProfile(sp);
+
+        if (status) {
+          setDailyStatus(status);
+          const txs = await fetchTransactions(user.id, today);
+          if (cancelled) return;
+          setTransactions(txs);
+          let cash = status.cashStart;
+          let bank = status.bankStart;
+          for (const tx of txs) {
+            if (tx.type === 'TOPUP') {
+              if (tx.target === 'KAS LACI') cash += tx.amount;
+              else bank += tx.amount;
+            } else if (tx.type === 'TARIK') {
+              cash -= tx.amount;
+              bank += tx.amount + tx.fee;
+            } else {
+              cash += tx.amount + tx.fee;
+              bank -= tx.amount;
+            }
           }
+          setBalance({ cash, bank });
+          setCurrentPage('dashboard');
+        } else {
+          setCurrentPage('open-store');
         }
-        setBalance({ cash, bank });
-        setCurrentPage('dashboard');
-      } else {
-        setCurrentPage('open-store');
+      } catch (err) {
+        console.error('loadData error:', err);
+        // On error/timeout, still show the app (open-store as fallback)
+        if (!cancelled) {
+          setCurrentPage('open-store');
+        }
+      } finally {
+        if (!cancelled) setDataLoading(false);
       }
-      setDataLoading(false);
     };
+
     loadData();
+    return () => { cancelled = true; };
   }, [user]);
 
   const handleOpenStore = useCallback((cashStart: number, bankStart: number) => {
