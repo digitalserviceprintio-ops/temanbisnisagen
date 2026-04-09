@@ -160,50 +160,73 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   // Load cloud data when user logs in
   useEffect(() => {
     if (!user) return;
+    let cancelled = false;
     setDataLoading(true);
+
     const loadData = async () => {
-      const today = new Date().toISOString().split('T')[0];
+      try {
+        const today = new Date().toISOString().split('T')[0];
 
-      // Fetch everything in parallel
-      const [info, admin, settings, sp, status] = await Promise.all([
-        checkLicense(user.id),
-        checkIsAdmin(user.id),
-        fetchAdminSettings(user.id),
-        fetchStoreProfile(user.id),
-        fetchDailyStatus(user.id, today),
-      ]);
+        // Fetch everything in parallel with timeout
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Data load timeout')), 10000)
+        );
 
-      setLicenseInfo(info);
-      setIsAdmin(admin);
-      if (settings) setAdminSettings(settings);
-      if (sp) setStoreProfile(sp);
+        const [info, admin, settings, sp, status] = await Promise.race([
+          Promise.all([
+            checkLicense(user.id),
+            checkIsAdmin(user.id),
+            fetchAdminSettings(user.id),
+            fetchStoreProfile(user.id),
+            fetchDailyStatus(user.id, today),
+          ]),
+          timeoutPromise,
+        ]) as [any, any, any, any, any];
 
-      if (status) {
-        setDailyStatus(status);
-        const txs = await fetchTransactions(user.id, today);
-        setTransactions(txs);
-        let cash = status.cashStart;
-        let bank = status.bankStart;
-        for (const tx of txs) {
-          if (tx.type === 'TOPUP') {
-            if (tx.target === 'KAS LACI') cash += tx.amount;
-            else bank += tx.amount;
-          } else if (tx.type === 'TARIK') {
-            cash -= tx.amount;
-            bank += tx.amount + tx.fee;
-          } else {
-            cash += tx.amount + tx.fee;
-            bank -= tx.amount;
+        if (cancelled) return;
+
+        setLicenseInfo(info);
+        setIsAdmin(admin);
+        if (settings) setAdminSettings(settings);
+        if (sp) setStoreProfile(sp);
+
+        if (status) {
+          setDailyStatus(status);
+          const txs = await fetchTransactions(user.id, today);
+          if (cancelled) return;
+          setTransactions(txs);
+          let cash = status.cashStart;
+          let bank = status.bankStart;
+          for (const tx of txs) {
+            if (tx.type === 'TOPUP') {
+              if (tx.target === 'KAS LACI') cash += tx.amount;
+              else bank += tx.amount;
+            } else if (tx.type === 'TARIK') {
+              cash -= tx.amount;
+              bank += tx.amount + tx.fee;
+            } else {
+              cash += tx.amount + tx.fee;
+              bank -= tx.amount;
+            }
           }
+          setBalance({ cash, bank });
+          setCurrentPage('dashboard');
+        } else {
+          setCurrentPage('open-store');
         }
-        setBalance({ cash, bank });
-        setCurrentPage('dashboard');
-      } else {
-        setCurrentPage('open-store');
+      } catch (err) {
+        console.error('loadData error:', err);
+        // On error/timeout, still show the app (open-store as fallback)
+        if (!cancelled) {
+          setCurrentPage('open-store');
+        }
+      } finally {
+        if (!cancelled) setDataLoading(false);
       }
-      setDataLoading(false);
     };
+
     loadData();
+    return () => { cancelled = true; };
   }, [user]);
 
   const handleOpenStore = useCallback((cashStart: number, bankStart: number) => {
