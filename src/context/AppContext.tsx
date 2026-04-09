@@ -85,47 +85,53 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   // Listen to auth state
   useEffect(() => {
-    // Timeout fallback in case auth listener doesn't fire
-    const timeout = setTimeout(() => {
-      setAuthReady(true);
-    }, 5000);
+    let mounted = true;
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      clearTimeout(timeout);
+      if (!mounted) return;
       if (session?.user) {
+        // Set authReady immediately so UI doesn't hang, then load profile
         setUserEmail(session.user.email || '');
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-
         setUser({
           id: session.user.id,
-          name: profile?.name || session.user.user_metadata?.name || 'Agen',
-          phone: profile?.phone || session.user.user_metadata?.phone || '',
-          role: profile?.role || 'Agen',
+          name: session.user.user_metadata?.name || 'Agen',
+          phone: session.user.user_metadata?.phone || '',
+          role: 'Agen',
           pin: '',
         });
-      } else {
-        setUser(null);
-      }
-      setAuthReady(true);
-    });
+        setAuthReady(true);
 
-    // Explicitly get session to trigger INITIAL_SESSION event
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        clearTimeout(timeout);
+        // Load profile in background to update name/phone
+        try {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+          if (mounted && profile) {
+            setUser(prev => prev ? {
+              ...prev,
+              name: profile.name || prev.name,
+              phone: profile.phone || prev.phone,
+              role: profile.role || prev.role,
+            } : prev);
+          }
+        } catch (e) {
+          console.error('Profile fetch error:', e);
+        }
+      } else {
         setUser(null);
         setAuthReady(true);
       }
-    }).catch(() => {
-      clearTimeout(timeout);
-      setAuthReady(true);
     });
 
+    // Fallback: if auth listener doesn't fire within 3s, mark ready
+    const timeout = setTimeout(() => {
+      if (mounted) setAuthReady(true);
+    }, 3000);
+
     return () => {
+      mounted = false;
       clearTimeout(timeout);
       subscription.unsubscribe();
     };
