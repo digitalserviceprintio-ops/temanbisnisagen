@@ -1,20 +1,9 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { AppProvider, useApp } from '@/context/AppContext';
 import AuthPage from '@/components/AuthPage';
 import LicenseActivationPage from '@/components/LicenseActivationPage';
 import OpenStorePage from '@/components/OpenStorePage';
 import DashboardPage from '@/components/DashboardPage';
-import CashbookPage from '@/components/CashbookPage';
-import ReportPage from '@/components/ReportPage';
-import AccountPage from '@/components/AccountPage';
-import AdminSettingsPage from '@/components/AdminSettingsPage';
-import FaqPage from '@/components/FaqPage';
-import MonthlyReportPage from '@/components/MonthlyReportPage';
-import LicenseManagementPage from '@/components/LicenseManagementPage';
-import PricingPage from '@/components/PricingPage';
-import PaymentPage from '@/components/PaymentPage';
-import PaymentManagementPage from '@/components/PaymentManagementPage';
-import PaymentHistoryPage from '@/components/PaymentHistoryPage';
 import BottomNav from '@/components/BottomNav';
 import TransactionModal from '@/components/TransactionModal';
 import TopupModal from '@/components/TopupModal';
@@ -23,6 +12,25 @@ import CloseShiftModal from '@/components/CloseShiftModal';
 import NotificationToast from '@/components/NotificationToast';
 import OfflineIndicator from '@/components/OfflineIndicator';
 import { Loader2 } from 'lucide-react';
+
+// Lazy load less-used pages
+const CashbookPage = lazy(() => import('@/components/CashbookPage'));
+const ReportPage = lazy(() => import('@/components/ReportPage'));
+const AccountPage = lazy(() => import('@/components/AccountPage'));
+const AdminSettingsPage = lazy(() => import('@/components/AdminSettingsPage'));
+const FaqPage = lazy(() => import('@/components/FaqPage'));
+const MonthlyReportPage = lazy(() => import('@/components/MonthlyReportPage'));
+const LicenseManagementPage = lazy(() => import('@/components/LicenseManagementPage'));
+const PricingPage = lazy(() => import('@/components/PricingPage'));
+const PaymentPage = lazy(() => import('@/components/PaymentPage'));
+const PaymentManagementPage = lazy(() => import('@/components/PaymentManagementPage'));
+const PaymentHistoryPage = lazy(() => import('@/components/PaymentHistoryPage'));
+
+const PageFallback = () => (
+  <div className="min-h-screen bg-background flex items-center justify-center">
+    <Loader2 className="w-6 h-6 animate-spin text-primary" />
+  </div>
+);
 
 const AppContent = () => {
   const { user, authReady, dataLoading, currentPage, licenseInfo, isAdmin, refreshLicense, handleLogout, userEmail } = useApp();
@@ -46,7 +54,6 @@ const AppContent = () => {
     );
   }
 
-  // License check: admins bypass, others need valid license
   if (!isAdmin && (!licenseInfo || !licenseInfo.valid)) {
     return (
       <LicenseActivationPage
@@ -61,24 +68,29 @@ const AppContent = () => {
 
   const hiddenNavPages: string[] = ['open-store', 'admin-settings', 'faq', 'monthly-report', 'license-management', 'pricing', 'payment', 'payment-management', 'payment-history'];
 
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'open-store': return <OpenStorePage />;
+      case 'dashboard': return <DashboardPage />;
+      case 'cashbook': return <Suspense fallback={<PageFallback />}><CashbookPage /></Suspense>;
+      case 'report': return <Suspense fallback={<PageFallback />}><ReportPage /></Suspense>;
+      case 'monthly-report': return <Suspense fallback={<PageFallback />}><MonthlyReportPage /></Suspense>;
+      case 'account': return <Suspense fallback={<PageFallback />}><AccountPage /></Suspense>;
+      case 'admin-settings': return <Suspense fallback={<PageFallback />}><AdminSettingsPage /></Suspense>;
+      case 'faq': return <Suspense fallback={<PageFallback />}><FaqPage /></Suspense>;
+      case 'license-management': return <Suspense fallback={<PageFallback />}><LicenseManagementPage /></Suspense>;
+      case 'pricing': return <Suspense fallback={<PageFallback />}><PricingPage /></Suspense>;
+      case 'payment': return <Suspense fallback={<PageFallback />}><PaymentPage /></Suspense>;
+      case 'payment-management': return <Suspense fallback={<PageFallback />}><PaymentManagementPage /></Suspense>;
+      case 'payment-history': return <Suspense fallback={<PageFallback />}><PaymentHistoryPage /></Suspense>;
+      default: return <DashboardPage />;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background max-w-lg mx-auto relative">
-      {currentPage === 'open-store' && <OpenStorePage />}
-      {currentPage === 'dashboard' && <DashboardPage />}
-      {currentPage === 'cashbook' && <CashbookPage />}
-      {currentPage === 'report' && <ReportPage />}
-      {currentPage === 'monthly-report' && <MonthlyReportPage />}
-      {currentPage === 'account' && <AccountPage />}
-      {currentPage === 'admin-settings' && <AdminSettingsPage />}
-      {currentPage === 'faq' && <FaqPage />}
-      {currentPage === 'license-management' && <LicenseManagementPage />}
-      {currentPage === 'pricing' && <PricingPage />}
-      {currentPage === 'payment' && <PaymentPage />}
-      {currentPage === 'payment-management' && <PaymentManagementPage />}
-      {currentPage === 'payment-history' && <PaymentHistoryPage />}
-
+      {renderPage()}
       {!hiddenNavPages.includes(currentPage) && <BottomNav />}
-
       <TransactionModal />
       <TopupModal />
       <ReceiptModal />
