@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, forwardRef } from 'react';
 import { AppProvider, useApp } from '@/context/AppContext';
 import AuthPage from '@/components/AuthPage';
 import LicenseActivationPage from '@/components/LicenseActivationPage';
@@ -103,10 +103,11 @@ const AppContent = () => {
   );
 };
 
-const Index = () => (
+const Index = forwardRef<HTMLDivElement>((_props, _ref) => (
   <AppProvider>
     <AppContent />
   </AppProvider>
-);
+));
+Index.displayName = "Index";
 
 export default Index;
