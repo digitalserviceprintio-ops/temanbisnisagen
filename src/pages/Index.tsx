@@ -25,6 +25,7 @@ const PricingPage = lazy(() => import('@/components/PricingPage'));
 const PaymentPage = lazy(() => import('@/components/PaymentPage'));
 const PaymentManagementPage = lazy(() => import('@/components/PaymentManagementPage'));
 const PaymentHistoryPage = lazy(() => import('@/components/PaymentHistoryPage'));
+const PaymentStatsPage = lazy(() => import('@/components/PaymentStatsPage'));
 
 const PageFallback = () => (
   <div className="min-h-screen bg-background flex items-center justify-center">
@@ -66,7 +67,7 @@ const AppContent = () => {
     );
   }
 
-  const hiddenNavPages: string[] = ['open-store', 'admin-settings', 'faq', 'monthly-report', 'license-management', 'pricing', 'payment', 'payment-management', 'payment-history'];
+  const hiddenNavPages: string[] = ['open-store', 'admin-settings', 'faq', 'monthly-report', 'license-management', 'pricing', 'payment', 'payment-management', 'payment-history', 'payment-stats'];
 
   const renderPage = () => {
     switch (currentPage) {
@@ -83,6 +84,7 @@ const AppContent = () => {
       case 'payment': return <Suspense fallback={<PageFallback />}><PaymentPage /></Suspense>;
       case 'payment-management': return <Suspense fallback={<PageFallback />}><PaymentManagementPage /></Suspense>;
       case 'payment-history': return <Suspense fallback={<PageFallback />}><PaymentHistoryPage /></Suspense>;
+      case 'payment-stats': return <Suspense fallback={<PageFallback />}><PaymentStatsPage /></Suspense>;
       default: return <DashboardPage />;
     }
   };
