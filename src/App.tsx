@@ -31,14 +31,12 @@ const App = () => {
         <Sonner />
         {showSplash && <SplashScreen onFinish={handleSplashFinish} />}
         <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-          <Suspense fallback={<LazyFallback />}>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/install" element={<InstallPage />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/install" element={<Suspense fallback={<LazyFallback />}><InstallPage /></Suspense>} />
+            <Route path="/reset-password" element={<Suspense fallback={<LazyFallback />}><ResetPassword /></Suspense>} />
+            <Route path="*" element={<Suspense fallback={<LazyFallback />}><NotFound /></Suspense>} />
+          </Routes>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

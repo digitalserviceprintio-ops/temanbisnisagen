@@ -163,25 +163,21 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     let cancelled = false;
     setDataLoading(true);
 
+    const safe = <T,>(p: Promise<T>, fallback: T): Promise<T> =>
+      p.catch((e) => { console.warn('fetch failed:', e); return fallback; });
+
     const loadData = async () => {
       try {
         const today = new Date().toISOString().split('T')[0];
 
-        // Fetch everything in parallel with timeout
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Data load timeout')), 10000)
-        );
-
-        const [info, admin, settings, sp, status] = await Promise.race([
-          Promise.all([
-            checkLicense(user.id),
-            checkIsAdmin(user.id),
-            fetchAdminSettings(user.id),
-            fetchStoreProfile(user.id),
-            fetchDailyStatus(user.id, today),
-          ]),
-          timeoutPromise,
-        ]) as [any, any, any, any, any];
+        // Each fetch is independently safe-wrapped so one slow query won't block UI
+        const [info, admin, settings, sp, status] = await Promise.all([
+          safe(checkLicense(user.id), null),
+          safe(checkIsAdmin(user.id), false),
+          safe(fetchAdminSettings(user.id), null),
+          safe(fetchStoreProfile(user.id), null),
+          safe(fetchDailyStatus(user.id, today), null),
+        ]);
 
         if (cancelled) return;
 
@@ -192,7 +188,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
         if (status) {
           setDailyStatus(status);
-          const txs = await fetchTransactions(user.id, today);
+          const txs = await safe(fetchTransactions(user.id, today), []);
           if (cancelled) return;
           setTransactions(txs);
           let cash = status.cashStart;
@@ -216,10 +212,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         }
       } catch (err) {
         console.error('loadData error:', err);
-        // On error/timeout, still show the app (open-store as fallback)
-        if (!cancelled) {
-          setCurrentPage('open-store');
-        }
+        if (!cancelled) setCurrentPage('open-store');
       } finally {
         if (!cancelled) setDataLoading(false);
       }
