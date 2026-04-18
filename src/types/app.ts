@@ -60,5 +60,5 @@ export interface Notification {
   message: string;
 }
 
-export type PageId = 'login' | 'open-store' | 'dashboard' | 'cashbook' | 'report' | 'monthly-report' | 'account' | 'admin-settings' | 'faq' | 'license-management' | 'pricing' | 'payment' | 'payment-management' | 'payment-history';
+export type PageId = 'login' | 'open-store' | 'dashboard' | 'cashbook' | 'report' | 'monthly-report' | 'account' | 'admin-settings' | 'faq' | 'license-management' | 'pricing' | 'payment' | 'payment-management' | 'payment-history' | 'payment-stats';
 export type TransactionType = 'TARIK' | 'SETOR' | 'TRANSFER';
