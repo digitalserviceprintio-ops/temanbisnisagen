@@ -159,9 +159,17 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   // Load cloud data when user logs in
   useEffect(() => {
-    if (!user) return;
+    if (!user) { setDataLoading(false); return; }
     let cancelled = false;
     setDataLoading(true);
+
+    // Hard safety timeout: never block UI more than 8 seconds
+    const safetyTimer = setTimeout(() => {
+      if (!cancelled) {
+        console.warn('Data load safety timeout — releasing UI');
+        setDataLoading(false);
+      }
+    }, 8000);
 
     const safe = <T,>(p: Promise<T>, fallback: T): Promise<T> =>
       p.catch((e) => { console.warn('fetch failed:', e); return fallback; });
@@ -170,9 +178,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       try {
         const today = new Date().toISOString().split('T')[0];
 
-        // Each fetch is independently safe-wrapped so one slow query won't block UI
         const [info, admin, settings, sp, status] = await Promise.all([
-          safe(checkLicense(user.id), null),
+          safe(checkLicense(user.id), { valid: false } as any),
           safe(checkIsAdmin(user.id), false),
           safe(fetchAdminSettings(user.id), null),
           safe(fetchStoreProfile(user.id), null),
@@ -214,12 +221,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         console.error('loadData error:', err);
         if (!cancelled) setCurrentPage('open-store');
       } finally {
+        clearTimeout(safetyTimer);
         if (!cancelled) setDataLoading(false);
       }
     };
 
     loadData();
-    return () => { cancelled = true; };
+    return () => { cancelled = true; clearTimeout(safetyTimer); };
   }, [user]);
 
   const handleOpenStore = useCallback((cashStart: number, bankStart: number) => {

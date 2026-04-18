@@ -1,4 +1,4 @@
-import { useState, useCallback, lazy, Suspense } from "react";
+import { useState, useCallback, lazy, Suspense, forwardRef } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,7 +20,7 @@ const LazyFallback = () => (
   </div>
 );
 
-const App = () => {
+const App = forwardRef<HTMLDivElement>((_props, _ref) => {
   const [showSplash, setShowSplash] = useState(true);
   const handleSplashFinish = useCallback(() => setShowSplash(false), []);
 
@@ -41,6 +41,7 @@ const App = () => {
       </TooltipProvider>
     </QueryClientProvider>
   );
-};
+});
+App.displayName = "App";
 
 export default App;
