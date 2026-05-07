@@ -55,17 +55,8 @@ const AppContent = () => {
     );
   }
 
-  if (!isAdmin && (!licenseInfo || !licenseInfo.valid)) {
-    return (
-      <LicenseActivationPage
-        userId={user.id}
-        userEmail={userEmail}
-        licenseInfo={licenseInfo}
-        onActivated={refreshLicense}
-        onLogout={handleLogout}
-      />
-    );
-  }
+  // License gating disabled — app is open to all authenticated users.
+  void licenseInfo; void refreshLicense; void isAdmin; void userEmail;
 
   const hiddenNavPages: string[] = ['open-store', 'admin-settings', 'faq', 'monthly-report', 'license-management', 'pricing', 'payment', 'payment-management', 'payment-history', 'payment-stats'];
 
