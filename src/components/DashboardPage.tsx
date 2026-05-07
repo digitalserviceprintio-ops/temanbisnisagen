@@ -94,6 +94,54 @@ const DashboardPage = () => {
         </div>
       </div>
 
+      {/* Info Card - Setor Tarik Tunai */}
+      <div className="px-6 mt-4">
+        <div className="bg-card rounded-3xl overflow-hidden shadow-elevated">
+          <div className="relative">
+            <img
+              src="/images/setor-tarik-info.png"
+              alt="Panduan transaksi setor dan tarik tunai"
+              className="w-full h-44 object-cover"
+              loading="lazy"
+              width={800}
+              height={1024}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-4">
+              <span className="inline-block text-[9px] font-black uppercase tracking-widest bg-white/20 text-white px-2 py-0.5 rounded-full mb-1.5 backdrop-blur-sm">
+                Info
+              </span>
+              <p className="text-white text-sm font-black leading-tight">Panduan Setor & Tarik Tunai</p>
+              <p className="text-white/80 text-[10px] mt-0.5">Catat transaksi dengan rapi dan aman</p>
+            </div>
+          </div>
+          <div className="p-4">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-xl bg-setor-soft text-setor flex items-center justify-center shrink-0 mt-0.5">
+                <ArrowDownLeft className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-foreground">Setor Tunai</p>
+                <p className="text-[10px] text-muted-foreground leading-relaxed mt-0.5">
+                  Terima uang dari nasabah, hitung dengan teliti, lalu catat di buku kas.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 mt-3">
+              <div className="w-8 h-8 rounded-xl bg-tarik-soft text-tarik flex items-center justify-center shrink-0 mt-0.5">
+                <ArrowUpRight className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-foreground">Tarik Tunai</p>
+                <p className="text-[10px] text-muted-foreground leading-relaxed mt-0.5">
+                  Keluarkan uang sesuai permintaan nasabah, minta tanda tangan, dan rekam transaksi.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Promo Carousel */}
       <PromoCarousel />
 
