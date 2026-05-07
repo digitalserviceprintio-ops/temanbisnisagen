@@ -12,44 +12,64 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
   const [success, setSuccess] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
+  const translateError = (msg: string): string => {
+    const m = msg.toLowerCase();
+    if (m.includes('invalid login') || m.includes('invalid credentials')) return 'Email atau password salah!';
+    if (m.includes('email not confirmed')) return 'Email belum diverifikasi. Silakan cek inbox Anda.';
+    if (m.includes('user already registered') || m.includes('already been registered')) return 'Email sudah terdaftar. Silakan login.';
+    if (m.includes('password should be at least')) return 'Password minimal 6 karakter!';
+    if (m.includes('unable to validate email') || m.includes('invalid email')) return 'Format email tidak valid!';
+    if (m.includes('rate limit') || m.includes('too many')) return 'Terlalu banyak percobaan. Coba lagi nanti.';
+    if (m.includes('network') || m.includes('fetch')) return 'Koneksi bermasalah. Cek internet Anda.';
+    return msg;
+  };
+
+  const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
   const onSubmit = async () => {
     setError('');
     setSuccess('');
-    if (authMode === 'register' && formData.password.length < 6) {
-      setError('Password minimal 6 karakter!');
-      return;
-    }
-    if (!formData.email || !formData.password) {
+    const email = formData.email.trim().toLowerCase();
+    const password = formData.password;
+
+    if (!email || !password) {
       setError('Email dan password wajib diisi!');
       return;
     }
+    if (!validateEmail(email)) {
+      setError('Format email tidak valid!');
+      return;
+    }
+    if (authMode === 'register') {
+      if (!formData.name.trim()) { setError('Nama lengkap wajib diisi!'); return; }
+      if (!formData.phone.trim()) { setError('Nomor HP wajib diisi!'); return; }
+      if (!/^08\d{8,12}$/.test(formData.phone.trim())) { setError('Nomor HP tidak valid (contoh: 08xxxxxxxxxx)'); return; }
+      if (password.length < 6) { setError('Password minimal 6 karakter!'); return; }
+    }
+
     setLoading(true);
     try {
       if (authMode === 'login') {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: formData.email,
-          password: formData.password,
-        });
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       } else {
         const { data, error } = await supabase.auth.signUp({
-          email: formData.email,
-          password: formData.password,
+          email,
+          password,
           options: {
-            data: { name: formData.name, phone: formData.phone },
+            emailRedirectTo: `${window.location.origin}/`,
+            data: { name: formData.name.trim(), phone: formData.phone.trim() },
           },
         });
         if (error) throw error;
-        // Check if email confirmation is required
         if (data.user && !data.session) {
           setSuccess('Pendaftaran berhasil! Silakan cek email Anda untuk verifikasi.');
           setLoading(false);
           return;
         }
       }
-      // Don't setLoading(false) on success - let AppContext handle the transition
     } catch (err: any) {
-      setError(err.message || 'Terjadi kesalahan');
+      setError(translateError(err.message || 'Terjadi kesalahan'));
       setLoading(false);
     }
   };
