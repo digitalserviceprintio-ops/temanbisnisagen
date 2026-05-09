@@ -98,19 +98,20 @@ const AccountPage = () => {
 
   return (
     <div className="pb-24">
-      <div className="gradient-hero px-6 pt-12 pb-8 rounded-b-[2rem]">
-        <h1 className="text-xl font-black text-primary-foreground">Akun Saya</h1>
+      <div className="relative gradient-hero hero-glow px-6 pt-12 pb-10 rounded-b-[2.5rem] overflow-hidden">
+        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/10 blur-3xl pointer-events-none" />
+        <h1 className="relative text-2xl font-display font-bold text-primary-foreground">Akun Saya</h1>
       </div>
 
-      <div className="px-6 -mt-5 space-y-4">
-        <div className="bg-card rounded-3xl p-6 shadow-elevated flex items-center gap-4">
-          <div className="w-14 h-14 gradient-primary rounded-2xl flex items-center justify-center">
+      <div className="px-6 -mt-6 space-y-3">
+        <div className="bg-card rounded-3xl p-5 shadow-glow border border-border/50 flex items-center gap-4">
+          <div className="w-14 h-14 gradient-primary rounded-2xl flex items-center justify-center shadow-elevated">
             <User className="w-7 h-7 text-primary-foreground" />
           </div>
-          <div>
-            <p className="text-lg font-black text-foreground">{user?.name}</p>
+          <div className="flex-1 min-w-0">
+            <p className="text-lg font-display font-bold text-foreground truncate">{user?.name}</p>
             <p className="text-sm text-muted-foreground">{user?.phone}</p>
-            {isAdmin && <span className="px-2 py-0.5 bg-setor-soft text-setor text-[10px] font-bold rounded-full">Admin</span>}
+            {isAdmin && <span className="inline-block mt-1 px-2 py-0.5 bg-setor-soft text-setor text-[10px] font-bold rounded-full">Admin</span>}
           </div>
         </div>
 
@@ -135,9 +136,9 @@ const AccountPage = () => {
             key={i}
             onClick={item.action}
             disabled={item.disabled}
-            className="w-full p-4 bg-card rounded-3xl flex items-center gap-4 border border-border shadow-card active:scale-[0.98] transition-transform disabled:opacity-40"
+            className="w-full p-4 bg-card rounded-2xl flex items-center gap-4 border border-border/60 shadow-card hover:shadow-soft active:scale-[0.98] transition-all disabled:opacity-40"
           >
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${item.colorClass}`}>
+            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${item.colorClass}`}>
               {item.icon}
             </div>
             <div className="flex-1 text-left">

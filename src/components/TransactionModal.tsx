@@ -34,17 +34,19 @@ const TransactionModal = () => {
   };
 
   return (
-    <div className="fixed inset-0 bg-foreground/50 z-50 flex items-end animate-fade-in" onClick={() => setShowTransactionModal(null)}>
-      <div className="bg-card w-full max-w-lg mx-auto rounded-t-3xl p-6 animate-slide-up" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-foreground/60 backdrop-blur-sm z-50 flex items-end animate-fade-in" onClick={() => setShowTransactionModal(null)}>
+      <div className="bg-card w-full max-w-lg mx-auto rounded-t-[2rem] p-6 animate-slide-up shadow-modal" onClick={e => e.stopPropagation()}>
+        {/* Drag handle */}
+        <div className="w-10 h-1 bg-muted rounded-full mx-auto mb-5" />
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${config.colorClass}`}>
+            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${config.colorClass}`}>
               {config.icon}
             </div>
-            <h2 className="text-lg font-black text-foreground">{config.title}</h2>
+            <h2 className="text-lg font-display font-bold text-foreground">{config.title}</h2>
           </div>
-          <button onClick={() => setShowTransactionModal(null)} className="p-2 bg-muted rounded-full">
+          <button onClick={() => setShowTransactionModal(null)} className="p-2 bg-muted rounded-full hover:bg-muted/70 transition-colors">
             <X className="w-4 h-4 text-muted-foreground" />
           </button>
         </div>
