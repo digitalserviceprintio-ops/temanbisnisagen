@@ -83,15 +83,20 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
   if (authMode === 'forgot') return <ForgotPasswordPage onBack={() => setAuthMode('login')} />;
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6">
-      <div className="w-full max-w-sm animate-scale-in">
+    <div className="min-h-screen bg-background relative flex items-center justify-center p-6 overflow-hidden">
+      {/* Decorative background orbs */}
+      <div className="absolute top-0 -left-20 w-72 h-72 rounded-full bg-primary/20 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 -right-20 w-80 h-80 rounded-full bg-accent/20 blur-3xl pointer-events-none" />
+      <div className="absolute inset-0 gradient-mesh pointer-events-none" />
+
+      <div className="relative w-full max-w-sm animate-scale-in">
         {/* Logo */}
         <div className="text-center mb-10">
-          <div className="w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-5">
-            <img src={logoTba} alt="Teman Bisnis Agen Logo" className="w-24 h-24 object-contain" />
+          <div className="w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-5 animate-float">
+            <img src={logoTba} alt="Teman Bisnis Agen Logo" className="w-24 h-24 object-contain drop-shadow-2xl" />
           </div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground">Teman Bisnis Agen</h1>
-          <p className="text-muted-foreground text-sm mt-1">
+          <h1 className="text-3xl font-display font-bold tracking-tight text-foreground">Teman Bisnis Agen</h1>
+          <p className="text-muted-foreground text-sm mt-2 font-medium">
             {authMode === 'login' ? 'Masuk ke Akun Anda' : 'Daftar Akun Baru'}
           </p>
         </div>
