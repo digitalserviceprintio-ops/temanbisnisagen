@@ -48,6 +48,12 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
     }
 
     setLoading(true);
+    // Safety timeout — never let the button hang forever
+    const timeoutId = setTimeout(() => {
+      setLoading(false);
+      setError('Koneksi lambat. Silakan coba lagi.');
+    }, 20000);
+
     try {
       if (authMode === 'login') {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -64,12 +70,12 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
         if (error) throw error;
         if (data.user && !data.session) {
           setSuccess('Pendaftaran berhasil! Silakan cek email Anda untuk verifikasi.');
-          setLoading(false);
-          return;
         }
       }
     } catch (err: any) {
       setError(translateError(err.message || 'Terjadi kesalahan'));
+    } finally {
+      clearTimeout(timeoutId);
       setLoading(false);
     }
   };
