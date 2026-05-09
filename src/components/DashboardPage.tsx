@@ -18,8 +18,8 @@ const DigitalClock = () => {
 
   return (
     <div className="text-right">
-      <p className="text-primary-foreground text-lg font-black tabular-nums tracking-tight">{timeStr}</p>
-      <p className="text-primary-foreground/60 text-[10px] font-bold uppercase tracking-widest">{dateStr}</p>
+      <p className="text-primary-foreground text-lg font-display font-bold tabular-nums tracking-tight">{timeStr}</p>
+      <p className="text-primary-foreground/70 text-[10px] font-semibold uppercase tracking-widest">{dateStr}</p>
     </div>
   );
 };
@@ -36,39 +36,43 @@ const DashboardPage = () => {
 
   return (
     <div className="pb-24">
-      {/* Header */}
-      <div className="gradient-hero px-6 pt-12 pb-8 rounded-b-[2rem]">
-        <div className="flex items-center justify-between mb-4">
+      {/* Header — premium glass hero */}
+      <div className="relative gradient-hero hero-glow px-6 pt-12 pb-10 rounded-b-[2.5rem] overflow-hidden">
+        {/* Decorative orbs */}
+        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/10 blur-3xl pointer-events-none" />
+        <div className="absolute top-20 -left-12 w-32 h-32 rounded-full bg-accent/30 blur-3xl pointer-events-none" />
+
+        <div className="relative flex items-center justify-between mb-6">
           <div className="flex-1 min-w-0">
             {storeProfile?.store_name ? (
               <>
-                <h2 className="text-primary-foreground text-lg font-black truncate">{storeProfile.store_name}</h2>
-                <p className="text-primary-foreground/60 text-[10px] font-bold uppercase tracking-widest truncate">
+                <h2 className="text-primary-foreground text-lg font-display font-bold truncate">{storeProfile.store_name}</h2>
+                <p className="text-primary-foreground/70 text-[10px] font-semibold uppercase tracking-widest truncate">
                   {storeProfile.owner_name || user?.name} · {storeProfile.phone || user?.phone}
                 </p>
                 {storeProfile.address && (
-                  <p className="text-primary-foreground/50 text-[10px] truncate mt-0.5">{storeProfile.address}</p>
+                  <p className="text-primary-foreground/55 text-[10px] truncate mt-0.5">{storeProfile.address}</p>
                 )}
               </>
             ) : (
               <>
-                <p className="text-primary-foreground/70 text-xs font-bold uppercase tracking-widest">Selamat Bekerja</p>
-                <h2 className="text-primary-foreground text-xl font-black mt-1">{user?.name}</h2>
+                <p className="text-primary-foreground/70 text-[10px] font-semibold uppercase tracking-widest">Selamat Bekerja</p>
+                <h2 className="text-primary-foreground text-xl font-display font-bold mt-1">{user?.name}</h2>
               </>
             )}
           </div>
           <DigitalClock />
         </div>
 
-        {/* Balance Cards */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-primary-foreground/15 backdrop-blur-sm rounded-2xl p-4">
-            <p className="text-primary-foreground/60 text-[10px] font-bold uppercase tracking-widest">Kas Laci</p>
-            <p className="text-primary-foreground text-lg font-black mt-1">{formatCurrency(balance.cash)}</p>
+        {/* Balance Cards — glass */}
+        <div className="relative grid grid-cols-2 gap-3">
+          <div className="glass-card rounded-2xl p-4">
+            <p className="text-primary-foreground/70 text-[10px] font-semibold uppercase tracking-widest">Kas Laci</p>
+            <p className="text-primary-foreground text-lg font-display font-bold mt-1 tabular-nums">{formatCurrency(balance.cash)}</p>
           </div>
-          <div className="bg-primary-foreground/15 backdrop-blur-sm rounded-2xl p-4">
-            <p className="text-primary-foreground/60 text-[10px] font-bold uppercase tracking-widest">Bank</p>
-            <p className="text-primary-foreground text-lg font-black mt-1">{formatCurrency(balance.bank)}</p>
+          <div className="glass-card rounded-2xl p-4">
+            <p className="text-primary-foreground/70 text-[10px] font-semibold uppercase tracking-widest">Bank</p>
+            <p className="text-primary-foreground text-lg font-display font-bold mt-1 tabular-nums">{formatCurrency(balance.bank)}</p>
           </div>
         </div>
       </div>
@@ -76,19 +80,19 @@ const DashboardPage = () => {
       {/* Upgrade Banner */}
       <UpgradeBanner />
 
-      {/* Quick Actions */}
-      <div className="px-6 -mt-5">
-        <div className="bg-card rounded-3xl p-4 shadow-elevated grid grid-cols-4 gap-2">
+      {/* Quick Actions — elevated glass card */}
+      <div className="px-6 -mt-6">
+        <div className="bg-card/95 backdrop-blur-xl rounded-3xl p-3 shadow-glow grid grid-cols-4 gap-1 border border-border/50">
           {actions.map(act => (
             <button
               key={act.id}
               onClick={() => act.id === 'TOPUP' ? setShowTopupModal(true) : setShowTransactionModal(act.id)}
-              className="flex flex-col items-center gap-2 py-3 rounded-2xl active:scale-95 transition-transform"
+              className="flex flex-col items-center gap-2 py-3 rounded-2xl active:scale-95 hover:bg-muted/50 transition-all"
             >
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${act.colorClass}`}>
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${act.colorClass} shadow-soft`}>
                 {act.icon}
               </div>
-              <span className="text-[10px] font-bold text-foreground uppercase tracking-wider">{act.label}</span>
+              <span className="text-[10px] font-semibold text-foreground uppercase tracking-wider">{act.label}</span>
             </button>
           ))}
         </div>
@@ -148,15 +152,15 @@ const DashboardPage = () => {
       {/* Recent Transactions */}
       <div className="px-6 mt-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-black text-sm text-foreground">Mutasi Terakhir</h3>
-          <button onClick={() => setCurrentPage('cashbook')} className="text-primary text-[10px] font-bold uppercase tracking-widest flex items-center gap-1">
+          <h3 className="font-display font-bold text-base text-foreground">Mutasi Terakhir</h3>
+          <button onClick={() => setCurrentPage('cashbook')} className="text-primary text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 hover:gap-2 transition-all">
             Semua <ChevronRight className="w-3 h-3" />
           </button>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {transactions.slice(0, 5).map(tx => (
-            <div key={tx.id} className="bg-card rounded-2xl p-4 flex items-center justify-between shadow-card">
+            <div key={tx.id} className="bg-card rounded-2xl p-4 flex items-center justify-between shadow-card border border-border/50 hover:shadow-soft transition-shadow">
               <div className="flex items-center gap-3">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                   tx.type === 'TARIK' ? 'bg-tarik-soft text-tarik' :
