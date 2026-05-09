@@ -162,7 +162,7 @@ const DashboardPage = () => {
           {transactions.slice(0, 5).map(tx => (
             <div key={tx.id} className="bg-card rounded-2xl p-4 flex items-center justify-between shadow-card border border-border/50 hover:shadow-soft transition-shadow">
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${
                   tx.type === 'TARIK' ? 'bg-tarik-soft text-tarik' :
                   tx.type === 'TOPUP' ? 'bg-topup-soft text-topup' :
                   tx.type === 'SETOR' ? 'bg-setor-soft text-setor' : 'bg-transfer-soft text-transfer'
@@ -170,11 +170,11 @@ const DashboardPage = () => {
                   {tx.type === 'TARIK' ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownLeft className="w-4 h-4" />}
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-foreground">{tx.customerName}</p>
+                  <p className="text-sm font-semibold text-foreground">{tx.customerName}</p>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">{tx.type} · {formatTime(tx.timestamp)}</p>
                 </div>
               </div>
-              <p className={`text-sm font-black ${tx.type === 'TARIK' ? 'text-tarik' : 'text-setor'}`}>
+              <p className={`text-sm font-display font-bold tabular-nums ${tx.type === 'TARIK' ? 'text-tarik' : 'text-setor'}`}>
                 {tx.type === 'TARIK' ? '-' : '+'}{formatCurrency(tx.amount)}
               </p>
             </div>
