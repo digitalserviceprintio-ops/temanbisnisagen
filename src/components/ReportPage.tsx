@@ -42,24 +42,25 @@ const ReportPage = () => {
 
   return (
     <div className="pb-24">
-      {/* Header */}
-      <div className="gradient-hero px-6 pt-12 pb-8 rounded-b-[2rem]">
-        <button onClick={() => setCurrentPage('dashboard')} className="mb-4 p-2 bg-primary-foreground/20 rounded-full print:hidden">
+      {/* Header — premium hero */}
+      <div className="relative gradient-hero hero-glow px-6 pt-12 pb-10 rounded-b-[2.5rem] overflow-hidden">
+        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/10 blur-3xl pointer-events-none" />
+        <button onClick={() => setCurrentPage('dashboard')} className="relative mb-4 p-2.5 glass-card rounded-full hover:bg-white/20 transition-colors print:hidden">
           <ChevronLeft className="w-5 h-5 text-primary-foreground" />
         </button>
-        <div className="flex items-center gap-3 mb-4">
+        <div className="relative flex items-center gap-3 mb-5">
           <TrendingUp className="w-6 h-6 text-primary-foreground" />
-          <h1 className="text-xl font-black text-primary-foreground">Laporan</h1>
+          <h1 className="text-2xl font-display font-bold text-primary-foreground">Laporan</h1>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-primary-foreground/15 backdrop-blur-sm rounded-2xl p-4">
-            <p className="text-primary-foreground/60 text-[10px] font-bold uppercase tracking-widest">Total Admin Fee</p>
-            <p className="text-primary-foreground text-lg font-black mt-1">{formatCurrency(stats.adminFee)}</p>
+        <div className="relative grid grid-cols-2 gap-3">
+          <div className="glass-card rounded-2xl p-4">
+            <p className="text-primary-foreground/70 text-[10px] font-semibold uppercase tracking-widest">Total Admin Fee</p>
+            <p className="text-primary-foreground text-lg font-display font-bold mt-1 tabular-nums">{formatCurrency(stats.adminFee)}</p>
           </div>
-          <div className="bg-primary-foreground/15 backdrop-blur-sm rounded-2xl p-4">
-            <p className="text-primary-foreground/60 text-[10px] font-bold uppercase tracking-widest">Volume TRX</p>
-            <p className="text-primary-foreground text-lg font-black mt-1">{formatCurrency(stats.volume)}</p>
+          <div className="glass-card rounded-2xl p-4">
+            <p className="text-primary-foreground/70 text-[10px] font-semibold uppercase tracking-widest">Volume TRX</p>
+            <p className="text-primary-foreground text-lg font-display font-bold mt-1 tabular-nums">{formatCurrency(stats.volume)}</p>
           </div>
         </div>
       </div>
