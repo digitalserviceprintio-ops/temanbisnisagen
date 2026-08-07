@@ -23,6 +23,19 @@ const StoreProfileModal = ({ open, onClose }: { open: boolean; onClose: () => vo
     }
   }, [storeProfile, open]);
 
+  // Close on Escape + lock background scroll while open
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [open, onClose]);
+
   if (!open) return null;
 
   const onSave = async () => {
@@ -40,7 +53,7 @@ const StoreProfileModal = ({ open, onClose }: { open: boolean; onClose: () => vo
   ];
 
   return (
-    <div className="fixed inset-0 bg-foreground/50 z-50 flex items-end animate-fade-in" onClick={onClose}>
+    <div className="fixed inset-0 bg-foreground/50 z-50 flex items-end animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-label="Profil Toko">
       <div className="bg-card w-full max-w-lg mx-auto rounded-t-3xl p-6 animate-slide-up" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -49,7 +62,7 @@ const StoreProfileModal = ({ open, onClose }: { open: boolean; onClose: () => vo
             </div>
             <h2 className="text-lg font-black text-foreground">Profil Toko</h2>
           </div>
-          <button onClick={onClose} className="p-2 bg-muted rounded-full">
+          <button onClick={onClose} aria-label="Tutup" className="p-2 bg-muted rounded-full">
             <X className="w-4 h-4 text-muted-foreground" />
           </button>
         </div>

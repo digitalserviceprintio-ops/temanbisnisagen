@@ -12,6 +12,8 @@ import CloseShiftModal from '@/components/CloseShiftModal';
 import NotificationToast from '@/components/NotificationToast';
 import OfflineIndicator from '@/components/OfflineIndicator';
 import { Loader2 } from 'lucide-react';
+import { useBackNavigation } from '@/hooks/use-back-navigation';
+
 
 // Lazy load less-used pages
 const CashbookPage = lazy(() => import('@/components/CashbookPage'));
@@ -34,7 +36,20 @@ const PageFallback = () => (
 );
 
 const AppContent = () => {
-  const { user, authReady, dataLoading, currentPage, licenseInfo, isAdmin, refreshLicense, handleLogout, userEmail } = useApp();
+  const {
+    user, authReady, dataLoading, currentPage, licenseInfo, isAdmin, refreshLicense, handleLogout, userEmail,
+    setCurrentPage, showTransactionModal, setShowTransactionModal, showTopupModal, setShowTopupModal,
+    showReceipt, setShowReceipt, showCloseShift, setShowCloseShift,
+  } = useApp();
+
+  // Device/browser back button: close an open modal first, otherwise go to the parent page.
+  useBackNavigation(currentPage, setCurrentPage, () => {
+    if (showReceipt) { setShowReceipt(null); return true; }
+    if (showCloseShift) { setShowCloseShift(false); return true; }
+    if (showTopupModal) { setShowTopupModal(false); return true; }
+    if (showTransactionModal) { setShowTransactionModal(null); return true; }
+    return false;
+  });
 
   if (!authReady) {
     return (
@@ -45,6 +60,7 @@ const AppContent = () => {
   }
 
   if (!user) return <AuthPage onAuthSuccess={() => {}} />;
+
 
   if (dataLoading) {
     return (
