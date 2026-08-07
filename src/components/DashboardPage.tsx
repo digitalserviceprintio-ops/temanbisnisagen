@@ -45,7 +45,7 @@ const DashboardPage = () => {
         <div className="absolute top-20 -left-12 w-32 h-32 rounded-full bg-accent/30 blur-3xl pointer-events-none" />
 
         {/* Vector illustration */}
-        <HeaderIllustration className="absolute -right-6 -top-2 w-48 h-36 text-primary-foreground opacity-[0.18] pointer-events-none select-none" />
+        <HeaderIllustration className="absolute -right-8 top-6 w-52 h-40 text-primary-foreground opacity-[0.16] pointer-events-none select-none" />
 
 
         <div className="relative flex items-center justify-between mb-6">
