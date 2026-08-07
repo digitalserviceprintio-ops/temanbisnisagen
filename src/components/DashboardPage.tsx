@@ -4,6 +4,8 @@ import { useApp } from '@/context/AppContext';
 import { formatCurrency, formatTime } from '@/lib/format';
 import PromoCarousel from './PromoCarousel';
 import UpgradeBanner from './UpgradeBanner';
+import HeaderIllustration from './HeaderIllustration';
+
 
 const DigitalClock = () => {
   const [now, setNow] = useState(new Date());
@@ -41,6 +43,10 @@ const DashboardPage = () => {
         {/* Decorative orbs */}
         <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/10 blur-3xl pointer-events-none" />
         <div className="absolute top-20 -left-12 w-32 h-32 rounded-full bg-accent/30 blur-3xl pointer-events-none" />
+
+        {/* Vector illustration */}
+        <HeaderIllustration className="absolute -right-4 top-4 w-48 h-40 text-primary-foreground opacity-[0.3] pointer-events-none select-none" />
+
 
         <div className="relative flex items-center justify-between mb-6">
           <div className="flex-1 min-w-0">
