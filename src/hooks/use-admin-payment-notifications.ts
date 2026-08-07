@@ -2,6 +2,15 @@ import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+interface PaymentOrderRow {
+  id?: string;
+  plan_name?: string;
+  amount?: number | string;
+  user_email?: string;
+  proof_url?: string | null;
+  status?: string;
+}
+
 export const useAdminPaymentNotifications = (isAdmin: boolean, userId: string | undefined) => {
   useEffect(() => {
     if (!isAdmin || !userId) return;
@@ -40,7 +49,7 @@ export const useAdminPaymentNotifications = (isAdmin: boolean, userId: string | 
         },
         (payload) => {
           const order = payload.new as PaymentOrderRow;
-          if (order.proof_url && !payload.old?.proof_url) {
+          if (order.proof_url && !(payload.old as PaymentOrderRow)?.proof_url) {
             toast.info('📸 Bukti Transfer Diunggah!', {
               description: `${order.user_email} mengunggah bukti transfer untuk ${order.plan_name}`,
               duration: 8000,

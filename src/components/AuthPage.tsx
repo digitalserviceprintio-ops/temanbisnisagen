@@ -3,6 +3,7 @@ import { Smartphone, UserPlus, KeyRound, Mail, Loader2, Eye, EyeOff } from 'luci
 import { supabase } from '@/integrations/supabase/client';
 import ForgotPasswordPage from './ForgotPasswordPage';
 import logoTba from '@/assets/logo-tba.png';
+import { getErrorMessage } from '@/lib/utils';
 
 const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
   const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgot'>('login');

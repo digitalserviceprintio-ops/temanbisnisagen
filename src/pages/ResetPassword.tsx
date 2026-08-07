@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { KeyRound, Loader2, CheckCircle, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { getErrorMessage } from '@/lib/utils';
 
 const ResetPassword = () => {
   const [password, setPassword] = useState('');

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, PlusCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { supabase } from '@/integrations/supabase/client';
+import { getErrorMessage } from '@/lib/utils';
 
 const TopupModal = () => {
   const { showTopupModal, setShowTopupModal, handleTopup } = useApp();
