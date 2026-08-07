@@ -70,7 +70,7 @@ const PaymentPage = () => {
         plan_name: plan.name,
         amount: plan.price,
         duration_days: plan.duration,
-      } as any)
+      } as never)
       .select('id')
       .single();
 
@@ -78,7 +78,7 @@ const PaymentPage = () => {
       setError('Gagal membuat pesanan. Coba lagi.');
       return;
     }
-    setOrderId((data as any).id);
+    setOrderId((data as { id: string }).id);
     setStep('transfer');
   };
 
@@ -108,7 +108,7 @@ const PaymentPage = () => {
 
     const { error: updateErr } = await supabase
       .from('payment_orders')
-      .update({ proof_url: urlData.publicUrl } as any)
+      .update({ proof_url: urlData.publicUrl } as never)
       .eq('id', orderId);
 
     if (updateErr) {

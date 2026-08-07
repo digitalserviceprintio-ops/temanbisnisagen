@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronLeft, Mail, Loader2, CheckCircle, KeyRound, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { getErrorMessage } from '@/lib/utils';
 
 const ForgotPasswordPage = ({ onBack }: { onBack: () => void }) => {
   const [step, setStep] = useState<'email' | 'sent'>('email');
@@ -18,8 +19,8 @@ const ForgotPasswordPage = ({ onBack }: { onBack: () => void }) => {
       });
       if (error) throw error;
       setStep('sent');
-    } catch (err: any) {
-      setError(err.message || 'Terjadi kesalahan');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }

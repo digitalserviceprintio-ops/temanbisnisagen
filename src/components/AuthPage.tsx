@@ -3,6 +3,7 @@ import { Smartphone, UserPlus, KeyRound, Mail, Loader2, Eye, EyeOff } from 'luci
 import { supabase } from '@/integrations/supabase/client';
 import ForgotPasswordPage from './ForgotPasswordPage';
 import logoTba from '@/assets/logo-tba.png';
+import { getErrorMessage } from '@/lib/utils';
 
 const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
   const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgot'>('login');
@@ -72,8 +73,8 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
           setSuccess('Pendaftaran berhasil! Silakan cek email Anda untuk verifikasi.');
         }
       }
-    } catch (err: any) {
-      setError(translateError(err.message || 'Terjadi kesalahan'));
+    } catch (err: unknown) {
+      setError(translateError(getErrorMessage(err)));
     } finally {
       clearTimeout(timeoutId);
       setLoading(false);

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, PlusCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { supabase } from '@/integrations/supabase/client';
+import { getErrorMessage } from '@/lib/utils';
 
 const TopupModal = () => {
   const { showTopupModal, setShowTopupModal, handleTopup } = useApp();
@@ -33,8 +34,8 @@ const TopupModal = () => {
       setStep(1);
       setFormData({ type: 'CASH', amount: '', source: '' });
       setPassword('');
-    } catch (err: any) {
-      setError(err.message || 'Verifikasi gagal');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Verifikasi gagal'));
     } finally {
       setLoading(false);
     }

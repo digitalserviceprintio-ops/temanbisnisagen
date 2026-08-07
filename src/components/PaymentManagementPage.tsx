@@ -66,7 +66,7 @@ const PaymentManagementPage = () => {
     setProcessing(orderId);
     await supabase
       .from('payment_orders')
-      .update({ status: 'rejected', admin_note: reason || 'Ditolak', verified_at: new Date().toISOString(), verified_by: user?.id } as any)
+      .update({ status: 'rejected', admin_note: reason || 'Ditolak', verified_at: new Date().toISOString(), verified_by: user?.id } as never)
       .eq('id', orderId);
     setProcessing(null);
     load();
