@@ -18,8 +18,8 @@ const ForgotPasswordPage = ({ onBack }: { onBack: () => void }) => {
       });
       if (error) throw error;
       setStep('sent');
-    } catch (err: any) {
-      setError(err.message || 'Terjadi kesalahan');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }

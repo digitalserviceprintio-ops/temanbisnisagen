@@ -27,7 +27,7 @@ export const runCacheCleanup = async () => {
     try {
       const queue = localStorage.getItem('offline_tx_queue');
       if (queue && queue.length > 500_000) localStorage.removeItem('offline_tx_queue');
-    } catch {}
+    } catch { /* ignore quota errors */ }
 
     localStorage.setItem(KEY, APP_VERSION);
   } catch (err) {

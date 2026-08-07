@@ -33,8 +33,8 @@ const TopupModal = () => {
       setStep(1);
       setFormData({ type: 'CASH', amount: '', source: '' });
       setPassword('');
-    } catch (err: any) {
-      setError(err.message || 'Verifikasi gagal');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Verifikasi gagal'));
     } finally {
       setLoading(false);
     }

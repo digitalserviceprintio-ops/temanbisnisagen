@@ -179,7 +179,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         const today = new Date().toISOString().split('T')[0];
 
         const [info, admin, settings, sp, status] = await Promise.all([
-          safe(checkLicense(user.id), { valid: false } as any),
+          safe(checkLicense(user.id), { valid: false }),
           safe(checkIsAdmin(user.id), false),
           safe(fetchAdminSettings(user.id), null),
           safe(fetchStoreProfile(user.id), null),

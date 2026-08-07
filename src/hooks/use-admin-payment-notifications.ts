@@ -16,7 +16,7 @@ export const useAdminPaymentNotifications = (isAdmin: boolean, userId: string | 
           table: 'payment_orders',
         },
         (payload) => {
-          const order = payload.new as any;
+          const order = payload.new as PaymentOrderRow;
           toast.info('💰 Pembayaran Baru Masuk!', {
             description: `${order.plan_name} - Rp ${Number(order.amount).toLocaleString('id-ID')} dari ${order.user_email}`,
             duration: 10000,
@@ -39,7 +39,7 @@ export const useAdminPaymentNotifications = (isAdmin: boolean, userId: string | 
           filter: `status=eq.pending`,
         },
         (payload) => {
-          const order = payload.new as any;
+          const order = payload.new as PaymentOrderRow;
           if (order.proof_url && !payload.old?.proof_url) {
             toast.info('📸 Bukti Transfer Diunggah!', {
               description: `${order.user_email} mengunggah bukti transfer untuk ${order.plan_name}`,

@@ -72,8 +72,8 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
           setSuccess('Pendaftaran berhasil! Silakan cek email Anda untuk verifikasi.');
         }
       }
-    } catch (err: any) {
-      setError(translateError(err.message || 'Terjadi kesalahan'));
+    } catch (err: unknown) {
+      setError(translateError(getErrorMessage(err)));
     } finally {
       clearTimeout(timeoutId);
       setLoading(false);

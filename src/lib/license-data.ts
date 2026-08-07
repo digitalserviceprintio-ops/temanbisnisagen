@@ -59,7 +59,7 @@ export const createLicense = async (durationDays: number, note: string, createdB
     duration_days: durationDays,
     note,
     created_by: createdBy,
-  } as any);
+  } as never);
   if (error) { console.error('createLicense error:', error); return null; }
   return key;
 };
@@ -67,7 +67,7 @@ export const createLicense = async (durationDays: number, note: string, createdB
 export const revokeLicense = async (licenseId: string) => {
   const { error } = await supabase
     .from('licenses')
-    .update({ status: 'revoked' } as any)
+    .update({ status: 'revoked' } as never)
     .eq('id', licenseId);
   if (error) console.error('revokeLicense error:', error);
 };

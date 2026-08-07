@@ -134,7 +134,7 @@ const PricingPage = () => {
               </div>
             ) : (
               <button
-                onClick={() => setCurrentPage('payment' as any)}
+                onClick={() => setCurrentPage('payment')}
                 className={`w-full py-3 font-bold rounded-xl text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-transform ${plan.popular ? 'gradient-primary text-primary-foreground' : 'bg-setor text-white'}`}
               >
                 Bayar Sekarang
