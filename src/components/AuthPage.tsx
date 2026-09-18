@@ -94,9 +94,9 @@ const AuthPage = ({ onAuthSuccess }: { onAuthSuccess: () => void }) => {
         {/* Logo */}
         <div className="text-center mb-10">
           <div className="w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-5 animate-float">
-            <img src={logoTba} alt="Teman Bisnis Agen Logo" className="w-24 h-24 object-contain drop-shadow-2xl" />
+            <img src={logoTba} alt="Dmini ATM Logo" className="w-24 h-24 object-contain drop-shadow-2xl" />
           </div>
-          <h1 className="text-3xl font-display font-bold tracking-tight text-foreground">Teman Bisnis Agen</h1>
+          <h1 className="text-3xl font-display font-bold tracking-tight text-foreground">Dmini ATM</h1>
           <p className="text-muted-foreground text-sm mt-2 font-medium">
             {authMode === 'login' ? 'Masuk ke Akun Anda' : 'Daftar Akun Baru'}
           </p>

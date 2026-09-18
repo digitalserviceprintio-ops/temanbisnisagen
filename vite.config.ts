@@ -23,8 +23,8 @@ export default defineConfig(({ mode }) => ({
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
       },
       manifest: {
-        name: "Teman Bisnis Agen",
-        short_name: "TBA",
+        name: "Dmini ATM",
+        short_name: "Dmini ATM",
         description: "Aplikasi pencatatan transaksi harian untuk agen branchless banking",
         theme_color: "#1e40af",
         background_color: "#1e40af",

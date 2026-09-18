@@ -23,11 +23,11 @@ const SplashScreen = ({ onFinish }: { onFinish: () => void }) => {
       <div className="relative animate-bounce-slow flex flex-col items-center gap-5">
         <img
           src={logoTba}
-          alt="Teman Bisnis Agen"
+          alt="Dmini ATM"
           className="w-28 h-28 rounded-3xl shadow-2xl drop-shadow-2xl"
         />
         <h1 className="text-3xl font-display font-bold text-white tracking-tight">
-          Teman Bisnis Agen
+          Dmini ATM
         </h1>
         <p className="text-white/70 text-sm font-medium">
           Pencatatan transaksi harian agen
