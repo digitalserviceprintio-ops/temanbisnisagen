@@ -29,11 +29,12 @@ const PaymentManagementPage = lazy(() => import('@/components/PaymentManagementP
 const PaymentHistoryPage = lazy(() => import('@/components/PaymentHistoryPage'));
 const PaymentStatsPage = lazy(() => import('@/components/PaymentStatsPage'));
 
-const PageFallback = () => (
-  <div className="min-h-screen bg-background flex items-center justify-center">
+const PageFallback = forwardRef<HTMLDivElement>((_props, ref) => (
+  <div ref={ref} className="min-h-screen bg-background flex items-center justify-center">
     <Loader2 className="w-6 h-6 animate-spin text-primary" />
   </div>
-);
+));
+PageFallback.displayName = 'PageFallback';
 
 const AppContent = () => {
   const {

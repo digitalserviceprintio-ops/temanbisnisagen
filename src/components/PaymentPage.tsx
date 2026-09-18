@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft, Upload, CheckCircle, Clock, AlertCircle, Copy, Check, ImageIcon } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -36,21 +36,24 @@ const PaymentPage = () => {
   const [loadingOrders, setLoadingOrders] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    loadOrders();
-  }, [user]);
-
-  const loadOrders = async () => {
+  const loadOrders = useCallback(async () => {
     if (!user) return;
     setLoadingOrders(true);
-    const { data } = await supabase
-      .from('payment_orders')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
-    setExistingOrders((data || []) as unknown as PaymentOrder[]);
-    setLoadingOrders(false);
-  };
+    try {
+      const { data } = await supabase
+        .from('payment_orders')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      setExistingOrders((data || []) as unknown as PaymentOrder[]);
+    } finally {
+      setLoadingOrders(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    loadOrders();
+  }, [loadOrders]);
 
   const handleCopyAccount = () => {
     navigator.clipboard.writeText(BANK_INFO.account);
