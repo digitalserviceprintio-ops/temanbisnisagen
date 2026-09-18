@@ -14,7 +14,7 @@ const InstallPage = () => {
           <span className="text-sm font-semibold">Kembali</span>
         </button>
         <div className="flex items-center gap-4">
-          <img src={logoTba} alt="TBA Logo" className="w-16 h-16 rounded-2xl shadow-lg bg-white/10 p-1" />
+          <img src={logoTba} alt="Dmini ATM Logo" className="w-16 h-16 rounded-2xl shadow-lg bg-white/10 p-1" />
           <div>
             <h1 className="text-xl font-black">Install Aplikasi</h1>
             <p className="text-primary-foreground/70 text-sm mt-1">Pasang di HP Android Anda</p>
@@ -54,7 +54,7 @@ const InstallPage = () => {
           <h2 className="font-bold text-foreground mb-4">📱 Cara Install via Chrome</h2>
           <div className="space-y-4">
             <Step number={1} title="Buka di Chrome">
-              Buka aplikasi <strong>Teman Bisnis Agen</strong> menggunakan browser <strong>Google Chrome</strong> di HP Android.
+              Buka aplikasi <strong>Dmini ATM</strong> menggunakan browser <strong>Google Chrome</strong> di HP Android.
             </Step>
             <Step number={2} title="Ketuk Menu ⋮">
               <span className="flex items-center gap-1 flex-wrap">
@@ -78,7 +78,7 @@ const InstallPage = () => {
           <h2 className="font-bold text-foreground mb-4">🌐 Cara Install via Samsung Internet</h2>
           <div className="space-y-4">
             <Step number={1} title="Buka di Samsung Internet">
-              Buka aplikasi <strong>Teman Bisnis Agen</strong> menggunakan browser <strong>Samsung Internet</strong>.
+              Buka aplikasi <strong>Dmini ATM</strong> menggunakan browser <strong>Samsung Internet</strong>.
             </Step>
             <Step number={2} title="Ketuk Menu">
               <span className="flex items-center gap-1 flex-wrap">

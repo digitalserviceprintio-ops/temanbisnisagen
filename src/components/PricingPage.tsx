@@ -73,7 +73,7 @@ const PricingPage = () => {
   const { setCurrentPage } = useApp();
 
   const handleOrder = (planName: string) => {
-    const msg = encodeURIComponent(`Halo, saya ingin memesan paket ${planName} Teman Bisnis Agen`);
+    const msg = encodeURIComponent(`Halo, saya ingin memesan paket ${planName} Dmini ATM`);
     window.open(`https://wa.me/6282186371356?text=${msg}`, '_blank');
   };
 
